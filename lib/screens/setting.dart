@@ -1,4 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:odbfinder/register/login.dart';
+import 'package:odbfinder/screens/accountsetting/editprofile.dart';
+import 'package:odbfinder/screens/accountsetting/securityandpassword.dart';
+import 'package:odbfinder/screens/accountsetting/verification.dart';
+import 'package:odbfinder/screens/notification/notificationsettings.dart';
+import 'package:odbfinder/screens/support/about.dart';
+import 'package:odbfinder/screens/support/helpcenter.dart';
+import 'package:odbfinder/screens/support/safetyguide.dart';
+import 'package:odbfinder/screens/support/terms.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -42,19 +51,40 @@ class SettingsScreen extends StatelessWidget {
               _buildSettingItem(
                 title: 'Edit Profile',
                 subtitle: 'Edit Name, Phone, Profile Photo',
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EditProfileScreen(),
+                    ),
+                  );
+                },
               ),
               const Divider(color: Colors.white, height: 16, thickness: 1),
               _buildSettingItem(
                 title: 'Student Verification',
                 subtitle: 'Status: [Verified/Unverified]',
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const VerificationScreen(),
+                    ),
+                  );
+                },
               ),
               const Divider(color: Colors.white, height: 16, thickness: 1),
               _buildSettingItem(
                 title: 'Security & Password',
                 subtitle: 'Change password',
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SecurityAndPasswordScreen(),
+                    ),
+                  );
+                },
               ),
             ]),
             const SizedBox(height: 20),
@@ -66,7 +96,14 @@ class SettingsScreen extends StatelessWidget {
               _buildSettingItem(
                 title: 'Notifications Settings',
                 subtitle: 'Push Alerts, SMS reminders',
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NotificationSettingsScreen(),
+                    ),
+                  );
+                },
               ),
             ]),
             const SizedBox(height: 20),
@@ -75,13 +112,49 @@ class SettingsScreen extends StatelessWidget {
             _buildSectionHeader('Support'),
             const SizedBox(height: 8),
             _buildCardGroup([
-              _buildSettingItem(title: 'Help Center', onTap: () {}),
+              _buildSettingItem(
+                title: 'Help Center',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HelpCenterScreen()),
+                  );
+                },
+              ),
               const Divider(color: Colors.white, height: 16, thickness: 1),
-              _buildSettingItem(title: 'Safety Guide', onTap: () {}),
+              _buildSettingItem(
+                title: 'Safety Guide',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SafetyGuideScreen(),
+                    ),
+                  );
+                },
+              ),
               const Divider(color: Colors.white, height: 16, thickness: 1),
-              _buildSettingItem(title: 'Terms of Service & Privacy Policy', onTap: () {}),
+              _buildSettingItem(
+                title: 'Terms of Service & Privacy Policy',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TermsAndPrivacyScreen(),
+                    ),
+                  );
+                },
+              ),
               const Divider(color: Colors.white, height: 16, thickness: 1),
-              _buildSettingItem(title: 'About', onTap: () {}),
+              _buildSettingItem(
+                title: 'About',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AboutScreen()),
+                  );
+                },
+              ),
             ]),
             const SizedBox(height: 32),
 
@@ -98,7 +171,10 @@ class SettingsScreen extends StatelessWidget {
                   elevation: 0,
                 ),
                 onPressed: () {
-                  // Handle logout action
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                  );
                 },
                 child: const Text(
                   'Logout',
@@ -174,10 +250,7 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.black54,
-                ),
+                style: const TextStyle(fontSize: 12, color: Colors.black54),
               ),
             ],
           ],

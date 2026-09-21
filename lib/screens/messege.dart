@@ -4,8 +4,8 @@ import 'package:odbfinder/screens/chat.dart';
 // Global conversation list shared across the app
 List<Map<String, String>> globalConversations = [
   {
-    'landlordName': 'Sample Landlord',
-    'lastMessage': 'Hello! Is the bedspace available?',
+    'landlordName': 'John Doe',
+    'lastMessage': 'Hello, is the room still available?',
     'time': '10:30 AM',
   },
 ];
@@ -43,6 +43,62 @@ class _MessagesScreenState extends State<MessagesScreen> {
     });
   }
 
+  void _deleteConversation(Map<String, String> chat) {
+    setState(() {
+      globalConversations.remove(chat);
+      _filteredConversations.remove(chat);
+    });
+  }
+
+  Future<bool?> _showDeleteConfirmation(
+    BuildContext context,
+    String landlordName,
+  ) {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Delete Conversation'),
+          content: Text(
+            'Are you sure you want to delete your conversation with $landlordName? This action cannot be undone.',
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text(
+                'Delete',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _openChatScreen(String landlordName) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatDetailScreen(
+          landlordName: landlordName,
+          shouldGoToMessagesOnBack: false,
+        ),
+      ),
+    );
+    _filterConversations();
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -51,82 +107,124 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Keep internal list in sync with global state changes
-    if (_searchController.text.isEmpty &&
-        _filteredConversations.length != globalConversations.length) {
+    if (_searchController.text.isEmpty) {
       _filteredConversations = List.from(globalConversations);
     }
 
     return Scaffold(
       backgroundColor: Colors.white,
-      // Removed Scaffold appBar to prevent duplicate top navigation bar
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Integrated Search Bar
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Container(
-                height: 48,
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.search, color: Colors.grey.shade600, size: 24),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          hintText: 'Search chats or landlords...',
-                          hintStyle: TextStyle(
-                            color: Colors.grey.shade500,
-                            fontSize: 15,
-                          ),
-                          border: InputBorder.none,
-                          isDense: true,
+      body: Column(
+        children: [
+          // Search Bar
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+              height: 48,
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.search, color: Colors.grey.shade600, size: 24),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Search chats or landlords...',
+                        hintStyle: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 15,
                         ),
+                        border: InputBorder.none,
+                        isDense: true,
                       ),
                     ),
-                    if (_searchController.text.isNotEmpty)
-                      GestureDetector(
-                        onTap: () => _searchController.clear(),
-                        child: Icon(
-                          Icons.clear,
-                          color: Colors.grey.shade600,
-                          size: 20,
-                        ),
+                  ),
+                  if (_searchController.text.isNotEmpty)
+                    GestureDetector(
+                      onTap: () => _searchController.clear(),
+                      child: Icon(
+                        Icons.clear,
+                        color: Colors.grey.shade600,
+                        size: 20,
                       ),
-                  ],
-                ),
+                    ),
+                ],
               ),
             ),
+          ),
 
-            // Messages List
-            Expanded(
-              child: _filteredConversations.isEmpty
-                  ? Center(
-                      child: Text(
-                        _searchController.text.isEmpty
-                            ? 'No messages yet'
-                            : 'No conversations found',
-                        style: TextStyle(
-                          color: Colors.grey.shade500,
-                          fontSize: 16,
-                        ),
+          // Conversation List
+          Expanded(
+            child: _filteredConversations.isEmpty
+                ? Center(
+                    child: Text(
+                      _searchController.text.isEmpty
+                          ? 'No messages yet'
+                          : 'No conversations found',
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 16,
                       ),
-                    )
-                  : ListView.separated(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      itemCount: _filteredConversations.length,
-                      separatorBuilder: (context, index) =>
-                          const Divider(height: 1, color: Colors.black12),
-                      itemBuilder: (context, index) {
-                        final chat = _filteredConversations[index];
-                        return ListTile(
+                    ),
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    itemCount: _filteredConversations.length,
+                    separatorBuilder: (context, index) =>
+                        const Divider(height: 1, color: Colors.black12),
+                    itemBuilder: (context, index) {
+                      final chat = _filteredConversations[index];
+                      final landlordName =
+                          chat['landlordName'] ?? '[Landlord Name]';
+
+                      return Dismissible(
+                        key: Key('${landlordName}_$index'),
+                        direction: DismissDirection.endToStart,
+                        confirmDismiss: (direction) async {
+                          return await _showDeleteConfirmation(
+                            context,
+                            landlordName,
+                          );
+                        },
+                        onDismissed: (direction) {
+                          _deleteConversation(chat);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Deleted chat with $landlordName',
+                              ),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                        background: Container(
+                          color: Colors.red,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 20.0),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                'Delete',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              Icon(
+                                Icons.delete,
+                                color: Colors.white,
+                                size: 28,
+                              ),
+                            ],
+                          ),
+                        ),
+                        child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 8,
@@ -141,7 +239,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                             ),
                           ),
                           title: Text(
-                            chat['landlordName'] ?? '[Landlord Name]',
+                            landlordName,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -160,27 +258,13 @@ class _MessagesScreenState extends State<MessagesScreen> {
                               fontSize: 12,
                             ),
                           ),
-                          onTap: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ChatDetailScreen(
-                                  landlordName:
-                                      chat['landlordName'] ?? '[Landlord Name]',
-                                  shouldGoToMessagesOnBack: false,
-                                ),
-                              ),
-                            );
-                            setState(() {
-                              _filterConversations();
-                            });
-                          },
-                        );
-                      },
-                    ),
-            ),
-          ],
-        ),
+                          onTap: () => _openChatScreen(landlordName),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
     );
   }

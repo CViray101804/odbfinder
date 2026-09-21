@@ -3,6 +3,7 @@ import 'package:odbfinder/screens/appstatus.dart';
 import 'package:odbfinder/screens/chat.dart';
 import 'package:odbfinder/screens/home.dart';
 import 'package:odbfinder/screens/messege.dart';
+import 'package:odbfinder/screens/adminprofile.dart';
 
 class RoomDetailScreen extends StatefulWidget {
   final Dorm dorm;
@@ -34,10 +35,9 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
   // =========================
   // OPEN CHAT SCREEN
   // =========================
-  void _openChatScreen() {
+  Future<void> _openChatScreen() async {
     final existingIndex = globalConversations.indexWhere(
-      (conversation) =>
-          conversation['landlordName'] == widget.dorm.name,
+      (conversation) => conversation['landlordName'] == widget.dorm.name,
     );
 
     if (existingIndex == -1) {
@@ -55,12 +55,28 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
       widget.onChatPressed!();
     }
 
-    Navigator.of(context, rootNavigator: true).push(
+    // Await navigation so state refreshes when coming back from chat
+    await Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(
         builder: (context) => ChatDetailScreen(
           landlordName: widget.dorm.name,
           shouldGoToMessagesOnBack: false,
         ),
+      ),
+    );
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  // =========================
+  // OPEN ADMIN / LANDLORD PROFILE
+  // =========================
+  void _openAdminProfile() {
+    Navigator.of(context, rootNavigator: true).push(
+      MaterialPageRoute(
+        builder: (context) => const AdminProfileScreen(),
       ),
     );
   }
@@ -172,7 +188,9 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                           child: GestureDetector(
                             onTap: _toggleFavorite,
                             child: Icon(
-                              _isFavorited ? Icons.favorite : Icons.favorite_border,
+                              _isFavorited
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
                               color: Colors.red,
                               size: 32,
                             ),
@@ -226,7 +244,8 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                     const Divider(color: Colors.black, thickness: 1),
                     const Text(
                       'Quick Specs',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const Divider(color: Colors.black, thickness: 1),
                     const Padding(
@@ -234,9 +253,12 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Text('[BEDSPACE]', style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text('[4 MAX/ROOM]', style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text('[EN-SUITE]', style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text('[BEDSPACE]',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text('[4 MAX/ROOM]',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text('[EN-SUITE]',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
@@ -247,7 +269,8 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                     const Divider(color: Colors.black, thickness: 1),
                     const Text(
                       'Amenities',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const Divider(color: Colors.black, thickness: 1),
                     const Padding(
@@ -285,7 +308,8 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                     const Divider(color: Colors.black, thickness: 1),
                     const Text(
                       'Landlord / Admin',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const Divider(color: Colors.black, thickness: 1),
 
@@ -293,19 +317,22 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
 
                     Row(
                       children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            'Profile',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                        GestureDetector(
+                          onTap: _openAdminProfile,
+                          child: Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            alignment: Alignment.center,
+                            child: const Text(
+                              'Profile',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
@@ -366,7 +393,8 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                             backgroundColor: const Color(0xFF6C93BF),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
-                              side: const BorderSide(color: Colors.black, width: 1),
+                              side: const BorderSide(
+                                  color: Colors.black, width: 1),
                             ),
                           ),
                           onPressed: _openBookingStatus,

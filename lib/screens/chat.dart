@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:odbfinder/screens/imageholder/imageolder.dart';
 import 'package:odbfinder/screens/messege.dart';
 
 class ChatMessage {
@@ -31,6 +32,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final TextEditingController _messageController = TextEditingController();
   final List<ChatMessage> _messages = [];
   bool _isTyping = false;
+  bool _isMuted = false;
+
+  // Sample images sent by landlord or user
+  final List<String> _sharedImages = [
+    'https://picsum.photos/300/300?random=1',
+    'https://picsum.photos/300/300?random=2',
+    'https://picsum.photos/300/300?random=3',
+  ];
 
   @override
   void initState() {
@@ -91,6 +100,310 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     _sendMessage('👍');
   }
 
+  // =========================================================
+  // OPTIONS & ACTION MENU (BOTTOM SHEET)
+  // =========================================================
+  void _showChatOptionsMenu() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    Text(
+                      widget.landlordName,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Divider(height: 1),
+
+                    // --- NAVIGATE TO IMAGE HOLDER SCREEN ---
+                    ListTile(
+                      leading: const Icon(Icons.photo_library_outlined,
+                          color: Color(0xFF0A4F7D)),
+                      title: const Text('Shared Images & Receipts'),
+                      subtitle: Text('${_sharedImages.length} attached photos'),
+                      onTap: () {
+                        Navigator.pop(context); // Close bottom sheet
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ImageHolderScreen(
+                              landlordName: widget.landlordName,
+                              imageUrls: _sharedImages,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+
+                    // --- MUTE / UNMUTE ---
+                    ListTile(
+                      leading: Icon(
+                        _isMuted
+                            ? Icons.notifications_off_outlined
+                            : Icons.notifications_active_outlined,
+                        color: _isMuted ? Colors.orange : const Color(0xFF0A4F7D),
+                      ),
+                      title: Text(_isMuted ? 'Unmute Chat' : 'Mute Notifications'),
+                      onTap: () {
+                        setState(() {
+                          _isMuted = !_isMuted;
+                        });
+                        setModalState(() {});
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(_isMuted
+                                ? 'Notifications muted'
+                                : 'Notifications unmuted'),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                    ),
+
+                    // --- REPORT ---
+                    ListTile(
+                      leading: const Icon(Icons.report_problem_outlined,
+                          color: Colors.orange),
+                      title: const Text('Report Conversation'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showReportCategoryDialog();
+                      },
+                    ),
+
+                    // --- BLOCK USER ---
+                    ListTile(
+                      leading: const Icon(Icons.block, color: Colors.red),
+                      title: const Text('Block Landlord/User'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showBlockDialog();
+                      },
+                    ),
+
+                    // --- DELETE CHAT ---
+                    ListTile(
+                      leading: const Icon(Icons.delete_outline, color: Colors.red),
+                      title: const Text(
+                        'Delete Conversation',
+                        style: TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold),
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showDeleteChatDialog();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // --- DIALOG: REPORT WITH SPECIFIC REASON CATEGORIES ---
+  void _showReportCategoryDialog() {
+    String selectedReason = 'Scam or Fraud';
+
+    final List<String> reportReasons = [
+      'Scam or Fraud',
+      'Harassment or Bullying',
+      'Inappropriate Content or Language',
+      'Fake Listing or Misleading Price',
+      'Spam or Unwanted Messaging',
+      'Other',
+    ];
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: const Text(
+                'Report User',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Why are you reporting this user? Select the reason that best fits:',
+                    style: TextStyle(fontSize: 13, color: Colors.black87),
+                  ),
+                  const SizedBox(height: 12),
+                  ...reportReasons.map((reason) {
+                    return RadioListTile<String>(
+                      title: Text(
+                        reason,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      value: reason,
+                      groupValue: selectedReason,
+                      activeColor: const Color(0xFF0A4F7D),
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      onChanged: (value) {
+                        if (value != null) {
+                          setDialogState(() {
+                            selectedReason = value;
+                          });
+                        }
+                      },
+                    );
+                  }),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0A4F7D),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Reported for "$selectedReason". Our team will review this chat.',
+                        ),
+                        duration: const Duration(seconds: 3),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Submit Report',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // --- DIALOG: BLOCK ---
+  void _showBlockDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Block ${widget.landlordName}?'),
+          content: const Text(
+            'Blocked users will no longer be able to send you messages or view your profile.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _handleDeleteAndExit();
+              },
+              child: const Text('Block', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // --- DIALOG: DELETE CHAT ---
+  void _showDeleteChatDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete Chat'),
+          content: Text(
+            'Are you sure you want to permanently delete your chat with ${widget.landlordName}? This action cannot be undone.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _handleDeleteAndExit();
+              },
+              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // --- CLEANLY DELETE & RETURN STRAIGHT TO MESSAGES SCREEN ---
+  void _handleDeleteAndExit() {
+    globalConversations.removeWhere(
+      (chat) => chat['landlordName'] == widget.landlordName,
+    );
+
+    // Pops all open routes down to the root screen (MessagesScreen)
+    if (Navigator.canPop(context)) {
+      Navigator.popUntil(context, (route) => route.isFirst);
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MessagesScreen()),
+      );
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Chat with ${widget.landlordName} deleted'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _messageController.dispose();
@@ -128,6 +441,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         ),
         body: Column(
           children: [
+            // USER HEADER WITH OPTIONS ICON
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: const BoxDecoration(
@@ -144,19 +458,41 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: Text(
-                      widget.landlordName,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            widget.landlordName,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (_isMuted)
+                          const Padding(
+                            padding: EdgeInsets.only(left: 6.0),
+                            child: Icon(
+                              Icons.notifications_off,
+                              size: 18,
+                              color: Colors.grey,
+                            ),
+                          ),
+                      ],
                     ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.info_outline,
+                        color: darkBlue, size: 28),
+                    onPressed: _showChatOptionsMenu,
                   ),
                 ],
               ),
             ),
+
+            // CHAT MESSAGES BODY
             Expanded(
               child: _messages.isEmpty
                   ? Center(
@@ -200,6 +536,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                       },
                     ),
             ),
+
+            // INPUT BAR
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               color: Colors.white,

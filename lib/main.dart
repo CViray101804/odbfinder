@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/home.dart'; // Import your home screen file here
-
+import 'package:odbfinder/register/login.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -16,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: const HomeScreen(),
+      home: const LoginScreen(),
     );
   }
 }

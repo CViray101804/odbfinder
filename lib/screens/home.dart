@@ -153,10 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
       // Keep only the selected screen visible
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _getScreens(),
-      ),
+      body: IndexedStack(index: _currentIndex, children: _getScreens()),
 
       // ---------------------------------------------------------------------
       // BOTTOM NAVIGATION
@@ -165,38 +162,20 @@ class _HomeScreenState extends State<HomeScreen> {
         height: 70,
         decoration: BoxDecoration(
           color: darkBlue,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(16),
-          ),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildNavItem(
-              icon: Icons.chat_bubble_rounded,
-              index: 0,
-            ),
+            _buildNavItem(icon: Icons.chat_bubble_rounded, index: 0),
 
-            _buildNavItem(
-              icon: Icons.notifications,
-              index: 1,
-              showBadge: true,
-            ),
+            _buildNavItem(icon: Icons.notifications, index: 1, showBadge: true),
 
-            _buildNavItem(
-              icon: Icons.home,
-              index: 2,
-            ),
+            _buildNavItem(icon: Icons.home, index: 2),
 
-            _buildNavItem(
-              icon: Icons.favorite,
-              index: 3,
-            ),
+            _buildNavItem(icon: Icons.favorite, index: 3),
 
-            _buildNavItem(
-              icon: Icons.person,
-              index: 4,
-            ),
+            _buildNavItem(icon: Icons.person, index: 4),
           ],
         ),
       ),
@@ -316,11 +295,7 @@ class FavoritesScreenContent extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.favorite_border,
-              size: 70,
-              color: Colors.grey.shade400,
-            ),
+            Icon(Icons.favorite_border, size: 70, color: Colors.grey.shade400),
             const SizedBox(height: 16),
             const Text(
               'No Saved Favorites Yet',
@@ -372,8 +347,7 @@ class HomeContentBody extends StatefulWidget {
 }
 
 class _HomeContentBodyState extends State<HomeContentBody> {
-  final TextEditingController _searchController =
-      TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   RangeValues _priceRange = const RangeValues(1000, 5000);
 
@@ -406,13 +380,11 @@ class _HomeContentBodyState extends State<HomeContentBody> {
 
     String tempGender = _selectedGender;
 
-    final TextEditingController minPriceController =
-        TextEditingController(
+    final TextEditingController minPriceController = TextEditingController(
       text: tempPriceRange.start.round().toString(),
     );
 
-    final TextEditingController maxPriceController =
-        TextEditingController(
+    final TextEditingController maxPriceController = TextEditingController(
       text: tempPriceRange.end.round().toString(),
     );
 
@@ -420,29 +392,22 @@ class _HomeContentBodyState extends State<HomeContentBody> {
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
         return StatefulBuilder(
-          builder: (
-            BuildContext context,
-            StateSetter setModalState,
-          ) {
+          builder: (BuildContext context, StateSetter setModalState) {
             return Padding(
               padding: EdgeInsets.only(
                 left: 20,
                 right: 20,
                 top: 20,
-                bottom:
-                    MediaQuery.of(context).viewInsets.bottom + 20,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
               ),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       'Filter Options',
@@ -469,31 +434,25 @@ class _HomeContentBodyState extends State<HomeContentBody> {
                         Expanded(
                           child: TextField(
                             controller: minPriceController,
-                            keyboardType:
-                                TextInputType.number,
+                            keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                               labelText: 'Min Price',
                               border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              contentPadding:
-                                  const EdgeInsets.symmetric(
+                              contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 8,
                               ),
                             ),
                             onChanged: (val) {
-                              final double? minVal =
-                                  double.tryParse(val);
+                              final double? minVal = double.tryParse(val);
 
                               if (minVal != null &&
                                   minVal >= 500 &&
-                                  minVal <=
-                                      tempPriceRange.end) {
+                                  minVal <= tempPriceRange.end) {
                                 setModalState(() {
-                                  tempPriceRange =
-                                      RangeValues(
+                                  tempPriceRange = RangeValues(
                                     minVal,
                                     tempPriceRange.end,
                                   );
@@ -508,31 +467,25 @@ class _HomeContentBodyState extends State<HomeContentBody> {
                         Expanded(
                           child: TextField(
                             controller: maxPriceController,
-                            keyboardType:
-                                TextInputType.number,
+                            keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                               labelText: 'Max Price',
                               border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              contentPadding:
-                                  const EdgeInsets.symmetric(
+                              contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 8,
                               ),
                             ),
                             onChanged: (val) {
-                              final double? maxVal =
-                                  double.tryParse(val);
+                              final double? maxVal = double.tryParse(val);
 
                               if (maxVal != null &&
                                   maxVal <= 10000 &&
-                                  maxVal >=
-                                      tempPriceRange.start) {
+                                  maxVal >= tempPriceRange.start) {
                                 setModalState(() {
-                                  tempPriceRange =
-                                      RangeValues(
+                                  tempPriceRange = RangeValues(
                                     tempPriceRange.start,
                                     maxVal,
                                   );
@@ -558,11 +511,13 @@ class _HomeContentBodyState extends State<HomeContentBody> {
                         setModalState(() {
                           tempPriceRange = values;
 
-                          minPriceController.text =
-                              values.start.round().toString();
+                          minPriceController.text = values.start
+                              .round()
+                              .toString();
 
-                          maxPriceController.text =
-                              values.end.round().toString();
+                          maxPriceController.text = values.end
+                              .round()
+                              .toString();
                         });
                       },
                     ),
@@ -584,8 +539,7 @@ class _HomeContentBodyState extends State<HomeContentBody> {
                       max: 10.0,
                       divisions: 19,
                       activeColor: darkBlue,
-                      label:
-                          '${tempMaxDistance.toStringAsFixed(1)} km',
+                      label: '${tempMaxDistance.toStringAsFixed(1)} km',
                       onChanged: (double value) {
                         setModalState(() {
                           tempMaxDistance = value;
@@ -607,39 +561,21 @@ class _HomeContentBodyState extends State<HomeContentBody> {
 
                     Row(
                       children: [
-                        _buildGenderChip(
-                          'Any',
-                          tempGender,
-                          (selected) {
-                            setModalState(
-                              () => tempGender = selected,
-                            );
-                          },
-                        ),
+                        _buildGenderChip('Any', tempGender, (selected) {
+                          setModalState(() => tempGender = selected);
+                        }),
 
                         const SizedBox(width: 8),
 
-                        _buildGenderChip(
-                          'Male',
-                          tempGender,
-                          (selected) {
-                            setModalState(
-                              () => tempGender = selected,
-                            );
-                          },
-                        ),
+                        _buildGenderChip('Male', tempGender, (selected) {
+                          setModalState(() => tempGender = selected);
+                        }),
 
                         const SizedBox(width: 8),
 
-                        _buildGenderChip(
-                          'Female',
-                          tempGender,
-                          (selected) {
-                            setModalState(
-                              () => tempGender = selected,
-                            );
-                          },
-                        ),
+                        _buildGenderChip('Female', tempGender, (selected) {
+                          setModalState(() => tempGender = selected);
+                        }),
                       ],
                     ),
 
@@ -650,15 +586,10 @@ class _HomeContentBodyState extends State<HomeContentBody> {
                         Expanded(
                           child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
-                              minimumSize:
-                                  const Size.fromHeight(48),
-                              side: BorderSide(
-                                color: darkBlue,
-                              ),
-                              shape:
-                                  RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(12),
+                              minimumSize: const Size.fromHeight(48),
+                              side: BorderSide(color: darkBlue),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
                             onPressed: () {
@@ -666,10 +597,7 @@ class _HomeContentBodyState extends State<HomeContentBody> {
                             },
                             child: Text(
                               'Cancel',
-                              style: TextStyle(
-                                color: darkBlue,
-                                fontSize: 16,
-                              ),
+                              style: TextStyle(color: darkBlue, fontSize: 16),
                             ),
                           ),
                         ),
@@ -678,27 +606,20 @@ class _HomeContentBodyState extends State<HomeContentBody> {
 
                         Expanded(
                           child: ElevatedButton(
-                            style:
-                                ElevatedButton.styleFrom(
-                              minimumSize:
-                                  const Size.fromHeight(48),
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(48),
                               backgroundColor: darkBlue,
-                              shape:
-                                  RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
                             onPressed: () {
                               setState(() {
-                                _priceRange =
-                                    tempPriceRange;
+                                _priceRange = tempPriceRange;
 
-                                _maxDistance =
-                                    tempMaxDistance;
+                                _maxDistance = tempMaxDistance;
 
-                                _selectedGender =
-                                    tempGender;
+                                _selectedGender = tempGender;
                               });
 
                               Navigator.pop(context);
@@ -732,20 +653,15 @@ class _HomeContentBodyState extends State<HomeContentBody> {
     String currentSelection,
     Function(String) onSelect,
   ) {
-    final bool isSelected =
-        currentSelection == label;
+    final bool isSelected = currentSelection == label;
 
     return ChoiceChip(
       label: Text(label),
       selected: isSelected,
       selectedColor: darkBlue,
       labelStyle: TextStyle(
-        color: isSelected
-            ? Colors.white
-            : Colors.black,
-        fontWeight: isSelected
-            ? FontWeight.bold
-            : FontWeight.normal,
+        color: isSelected ? Colors.white : Colors.black,
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
       ),
       onSelected: (bool selected) {
         if (selected) {
@@ -763,14 +679,11 @@ class _HomeContentBodyState extends State<HomeContentBody> {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Expanded(
-                child: _buildSearchBar(),
-              ),
+              Expanded(child: _buildSearchBar()),
 
               const SizedBox(width: 12),
 
@@ -782,9 +695,7 @@ class _HomeContentBodyState extends State<HomeContentBody> {
 
           _buildSectionTitle('Recommended'),
 
-          const Divider(
-            color: Colors.black54,
-          ),
+          const Divider(color: Colors.black54),
 
           const SizedBox(height: 8),
 
@@ -794,9 +705,7 @@ class _HomeContentBodyState extends State<HomeContentBody> {
 
           _buildSectionTitle('Recently Viewed'),
 
-          const Divider(
-            color: Colors.black54,
-          ),
+          const Divider(color: Colors.black54),
 
           const SizedBox(height: 8),
 
@@ -813,9 +722,7 @@ class _HomeContentBodyState extends State<HomeContentBody> {
             ),
           ),
 
-          const Divider(
-            color: Colors.black54,
-          ),
+          const Divider(color: Colors.black54),
 
           const SizedBox(height: 12),
 
@@ -823,20 +730,15 @@ class _HomeContentBodyState extends State<HomeContentBody> {
           // EXPLORE DORM LIST
           // -----------------------------------------------------------------
           ...sampleDorms.map((dorm) {
-            final bool isFavorited =
-                widget.favoriteIds.contains(dorm.id);
+            final bool isFavorited = widget.favoriteIds.contains(dorm.id);
 
             return Padding(
-              padding:
-                  const EdgeInsets.only(bottom: 12.0),
+              padding: const EdgeInsets.only(bottom: 12.0),
               child: buildExploreCard(
                 context: context,
                 dorm: dorm,
                 isFavorited: isFavorited,
-                onFavoriteTap: () =>
-                    widget.onToggleFavorite(
-                  dorm.id,
-                ),
+                onFavoriteTap: () => widget.onToggleFavorite(dorm.id),
               ),
             );
           }),
@@ -851,12 +753,10 @@ class _HomeContentBodyState extends State<HomeContentBody> {
   Widget _buildSearchBar() {
     return Container(
       height: 45,
-      padding:
-          const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: lightGrey,
-        borderRadius:
-            BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24),
       ),
       child: TextField(
         controller: _searchController,
@@ -866,16 +766,8 @@ class _HomeContentBodyState extends State<HomeContentBody> {
         decoration: const InputDecoration(
           hintText: 'Search...',
           border: InputBorder.none,
-          suffixIcon: Icon(
-            Icons.search,
-            color: Colors.black,
-            size: 24,
-          ),
-          suffixIconConstraints:
-              BoxConstraints(
-            minWidth: 0,
-            minHeight: 0,
-          ),
+          suffixIcon: Icon(Icons.search, color: Colors.black, size: 24),
+          suffixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
         ),
       ),
     );
@@ -889,22 +781,15 @@ class _HomeContentBodyState extends State<HomeContentBody> {
       onTap: _openFilterModal,
       child: Container(
         height: 45,
-        padding:
-            const EdgeInsets.symmetric(
-          horizontal: 24,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         decoration: BoxDecoration(
           color: lightGrey,
-          borderRadius:
-              BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(24),
         ),
         child: const Center(
           child: Text(
             'Filter',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.black87,
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.black87),
           ),
         ),
       ),
@@ -940,17 +825,9 @@ class _HomeContentBodyState extends State<HomeContentBody> {
         const SizedBox(width: 12),
 
         Container(
-          padding:
-              const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: lightGrey,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.chevron_right,
-            size: 20,
-            color: Colors.black,
-          ),
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(color: lightGrey, shape: BoxShape.circle),
+          child: const Icon(Icons.chevron_right, size: 20, color: Colors.black),
         ),
       ],
     );
@@ -965,29 +842,22 @@ class _HomeContentBodyState extends State<HomeContentBody> {
       height: 180,
       decoration: BoxDecoration(
         color: cardGrey,
-        borderRadius:
-            BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         children: [
           Container(
             height: 100,
             width: double.infinity,
-            margin:
-                const EdgeInsets.all(6),
+            margin: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius:
-                  BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: const Center(
               child: Text(
                 'Photo',
-                style: TextStyle(
-                  fontWeight:
-                      FontWeight.bold,
-                  fontSize: 16,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
           ),
@@ -1027,12 +897,10 @@ Widget buildExploreCard({
     },
     child: Container(
       height: 120,
-      padding:
-          const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: const Color(0xFFD4D4D4),
-        borderRadius:
-            BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         children: [
@@ -1044,17 +912,12 @@ Widget buildExploreCard({
             height: double.infinity,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius:
-                  BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: const Center(
               child: Text(
                 'Photo',
-                style: TextStyle(
-                  fontWeight:
-                      FontWeight.bold,
-                  fontSize: 16,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
           ),
@@ -1068,16 +931,13 @@ Widget buildExploreCard({
             child: Stack(
               children: [
                 Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       dorm.name,
                       style: const TextStyle(
-                        fontWeight:
-                            FontWeight.bold,
+                        fontWeight: FontWeight.bold,
                         fontSize: 15,
                         color: Colors.black,
                       ),
@@ -1089,8 +949,7 @@ Widget buildExploreCard({
                       dorm.priceAndRating,
                       style: const TextStyle(
                         fontSize: 13,
-                        color:
-                            Colors.black87,
+                        color: Colors.black87,
                       ),
                     ),
 
@@ -1100,8 +959,7 @@ Widget buildExploreCard({
                       dorm.distance,
                       style: const TextStyle(
                         fontSize: 13,
-                        color:
-                            Colors.black87,
+                        color: Colors.black87,
                       ),
                     ),
 
@@ -1111,8 +969,7 @@ Widget buildExploreCard({
                       dorm.preference,
                       style: const TextStyle(
                         fontSize: 13,
-                        color:
-                            Colors.black87,
+                        color: Colors.black87,
                       ),
                     ),
                   ],
@@ -1127,12 +984,8 @@ Widget buildExploreCard({
                   child: GestureDetector(
                     onTap: onFavoriteTap,
                     child: Icon(
-                      isFavorited
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      color: isFavorited
-                          ? Colors.red
-                          : Colors.black,
+                      isFavorited ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorited ? Colors.red : Colors.black,
                       size: 24,
                     ),
                   ),

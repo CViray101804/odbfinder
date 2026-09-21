@@ -5,11 +5,21 @@ import 'package:odbfinder/screens/setting.dart';
 // ---------------------------------------------------------------------------
 // PROFILE SCREEN
 // ---------------------------------------------------------------------------
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   final Color darkBlue = const Color(0xFF0A4F7D);
   final Color cardGrey = const Color(0xFFD9D9D9);
+
+  // Profile State Variables
+  String userName = 'User';
+  String userEmail = 'example@gmail.com';
+  String userContact = '090000000';
 
   @override
   Widget build(BuildContext context) {
@@ -46,13 +56,32 @@ class ProfileScreen extends StatelessWidget {
                           color: Colors.white,
                           size: 28,
                         ),
-                        onPressed: () {
-                          Navigator.push(
+                        onPressed: () async {
+                          // Await data passed back from SettingsScreen -> EditProfileScreen
+                          final updatedData = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => const SettingsScreen(),
                             ),
                           );
+
+                          // Update profile screen state only if valid data was returned
+                          if (updatedData != null && updatedData is Map<String, String>) {
+                            setState(() {
+                              if (updatedData['name'] != null &&
+                                  updatedData['name']!.trim().isNotEmpty) {
+                                userName = updatedData['name']!;
+                              }
+                              if (updatedData['email'] != null &&
+                                  updatedData['email']!.trim().isNotEmpty) {
+                                userEmail = updatedData['email']!;
+                              }
+                              if (updatedData['contact'] != null &&
+                                  updatedData['contact']!.trim().isNotEmpty) {
+                                userContact = updatedData['contact']!;
+                              }
+                            });
+                          }
                         },
                       ),
                     ),
@@ -74,10 +103,10 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    // User Name
-                    const Text(
-                      'User',
-                      style: TextStyle(
+                    // Dynamic User Name
+                    Text(
+                      userName,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 22,
                         fontWeight: FontWeight.w600,
@@ -104,9 +133,9 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    _buildInfoPill('Email:example@gmail.com'),
+                    _buildInfoPill('Email: $userEmail'),
                     const SizedBox(height: 10),
-                    _buildInfoPill('Contacts:090000000'),
+                    _buildInfoPill('Contacts: $userContact'),
                   ],
                 ),
               ),
