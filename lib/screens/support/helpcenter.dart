@@ -8,37 +8,29 @@ class HelpCenterScreen extends StatefulWidget {
 }
 
 class _HelpCenterScreenState extends State<HelpCenterScreen> {
-  final Color darkBlue = const Color(0xFF0A4F7D);
-  final Color cardGrey = const Color(0xFFD9D9D9);
-
+  final Color darkBlue = const Color(0xFF004D7A);
   final TextEditingController _searchController = TextEditingController();
 
-  // Frequently Asked Questions Data
   final List<Map<String, String>> _allFaqs = [
     {
       'question': 'How do I book a bedspace or room?',
-      'answer':
-          'Browse listings on the home screen, select a property to view its details, and tap the "Book" button at the bottom of the page to submit your application.'
+      'answer': 'Browse listings on the home screen, select a property to view its details, and tap the "Book" button at the bottom of the page to submit your application[cite: 10].'
     },
     {
       'question': 'How can I chat with the landlord/admin?',
-      'answer':
-          'You can tap the "Chat" button on any room detail page or landlord profile. You can also view all your active conversations under the Messages tab.'
+      'answer': 'You can tap the "Chat" button on any room detail page or landlord profile. You can also view all your active conversations under the Messages tab[cite: 10].'
     },
     {
       'question': 'How do I check my booking application status?',
-      'answer':
-          'Go to your account menu or click on "Booking Status" to view real-time updates on your pending, approved, or declined applications.'
+      'answer': 'Go to your account menu or click on "Booking Status" to view real-time updates on your pending, approved, or declined applications[cite: 10].'
     },
     {
       'question': 'What payment methods are supported?',
-      'answer':
-          'Payment arrangements (e.g., GCash, cash, bank transfer) are set directly by each landlord. Check the listing details or send a direct message to confirm.'
+      'answer': 'Payment arrangements (e.g., GCash, cash, bank transfer) are set directly by each landlord. Check the listing details or send a direct message to confirm[cite: 10].'
     },
     {
       'question': 'How do I save properties to my favorites?',
-      'answer':
-          'Tap the heart icon on any listing card or room details page to save it to your Favorites list for quick access later.'
+      'answer': 'Tap the heart icon on any listing card or room details page to save it to your Favorites list for quick access later[cite: 10].'
     },
   ];
 
@@ -57,9 +49,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
       } else {
         _filteredFaqs = _allFaqs
             .where((faq) =>
-                faq['question']!
-                    .toLowerCase()
-                    .contains(query.toLowerCase()) ||
+                faq['question']!.toLowerCase().contains(query.toLowerCase()) ||
                 faq['answer']!.toLowerCase().contains(query.toLowerCase()))
             .toList();
       }
@@ -75,73 +65,59 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70),
-        child: AppBar(
-          backgroundColor: darkBlue,
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          toolbarHeight: 70,
-          title: Row(
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Colors.white,
-                  size: 22,
-                ),
-                onPressed: () => Navigator.pop(context),
-              ),
-              const SizedBox(width: 4),
-              const Text(
-                'Back',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        backgroundColor: darkBlue,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Help Center',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
+        ),
+        elevation: 0,
+        toolbarHeight: 70,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- TITLE ---
-            const Center(
-              child: Text(
-                'Help Center',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
             // --- SEARCH BAR ---
             Container(
               height: 48,
               padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
-                color: cardGrey,
-                borderRadius: BorderRadius.circular(24),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.grey.shade200),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.search, color: Colors.black54),
-                  const SizedBox(width: 8),
+                  Icon(Icons.search, color: Colors.grey.shade500, size: 20),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
                       controller: _searchController,
                       onChanged: _filterFaqs,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Search for help or topics...',
+                        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
                         border: InputBorder.none,
                         isDense: true,
                       ),
@@ -159,7 +135,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey,
+                color: Color(0xFF1E1E1E),
               ),
             ),
             const SizedBox(height: 12),
@@ -167,13 +143,14 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
               children: [
                 Expanded(
                   child: _buildContactCard(
-                    icon: Icons.support_agent,
+                    icon: Icons.support_agent_rounded,
                     title: 'Live Support',
-                    subtitle: 'Chat with us',
+                    subtitle: 'Chat with us[cite: 10]',
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Connecting to live support...'),
+                          duration: Duration(seconds: 2),
                         ),
                       );
                     },
@@ -184,11 +161,12 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                   child: _buildContactCard(
                     icon: Icons.email_outlined,
                     title: 'Email Us',
-                    subtitle: 'support@odbfinder.com',
+                    subtitle: 'support@odbfinder.com[cite: 10]',
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Opening email client...'),
+                          duration: Duration(seconds: 2),
                         ),
                       );
                     },
@@ -197,7 +175,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
               ],
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
 
             // --- FAQ SECTION ---
             const Text(
@@ -205,18 +183,18 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey,
+                color: Color(0xFF1E1E1E),
               ),
             ),
             const SizedBox(height: 12),
 
             _filteredFaqs.isEmpty
                 ? Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24.0),
+                    padding: const EdgeInsets.symmetric(vertical: 32.0),
                     child: Center(
                       child: Text(
-                        'No answers found matching "${_searchController.text}"',
-                        style: const TextStyle(color: Colors.black54),
+                        'No answers found matching "${_searchController.text}"[cite: 10]',
+                        style: TextStyle(color: Colors.grey.shade500),
                       ),
                     ),
                   )
@@ -229,17 +207,25 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
                         decoration: BoxDecoration(
-                          color: cardGrey,
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.04),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
                         ),
                         child: ExpansionTile(
-                          shape: const Border(), // Removes internal borders
+                          shape: const Border(),
+                          collapsedShape: const Border(),
                           title: Text(
                             faq['question']!,
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: Color(0xFF1E1E1E),
                             ),
                           ),
                           children: [
@@ -251,9 +237,9 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                               ),
                               child: Text(
                                 faq['answer']!,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.black87,
+                                  color: Colors.grey.shade700,
                                   height: 1.4,
                                 ),
                               ),
@@ -269,7 +255,6 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
     );
   }
 
-  // Helper widget for contact action buttons
   Widget _buildContactCard({
     required IconData icon,
     required String title,
@@ -282,28 +267,42 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: cardGrey,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: Column(
           children: [
-            Icon(icon, size: 32, color: darkBlue),
-            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: darkBlue.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, size: 26, color: darkBlue),
+            ),
+            const SizedBox(height: 10),
             Text(
               title,
               style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Color(0xFF1E1E1E),
               ),
             ),
             const SizedBox(height: 4),
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
-                color: Colors.black87,
+                color: Colors.grey.shade600,
               ),
             ),
           ],

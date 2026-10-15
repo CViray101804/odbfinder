@@ -15,8 +15,7 @@ class AdminProfileScreen extends StatefulWidget {
 }
 
 class _AdminProfileScreenState extends State<AdminProfileScreen> {
-  final Color darkBlue = const Color(0xFF0A4F7D);
-  final Color cardGrey = const Color(0xFFD9D9D9);
+  final Color darkBlue = const Color(0xFF004D7A);
 
   // Filter tab selection: 'All', 'Available', 'Reserved', 'Fully Booked'
   String selectedFilter = 'All';
@@ -62,16 +61,11 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
     return rooms.where((room) => room['status'] == category).length;
   }
 
-  // =========================================================
-  // NAVIGATE TO CHAT & UPDATE GLOBAL MESSAGES LIST
-  // =========================================================
   Future<void> _openChatWithAdmin() async {
-    // Check if a conversation with this admin already exists in messege.dart
     final existingIndex = globalConversations.indexWhere(
       (conversation) => conversation['landlordName'] == widget.landlordName,
     );
 
-    // If it doesn't exist yet, insert a new entry into globalConversations
     if (existingIndex == -1) {
       globalConversations.insert(
         0,
@@ -83,7 +77,6 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
       );
     }
 
-    // Await navigation so state refreshes when coming back from chat
     await Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(
         builder: (context) => ChatDetailScreen(
@@ -101,35 +94,25 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70),
-        child: AppBar(
-          backgroundColor: darkBlue,
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          toolbarHeight: 70,
-          title: Row(
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Colors.white,
-                  size: 22,
-                ),
-                onPressed: () => Navigator.pop(context),
-              ),
-              const SizedBox(width: 4),
-              const Text(
-                'Back',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        backgroundColor: darkBlue,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Admin Profile',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
+        ),
+        elevation: 0,
+        toolbarHeight: 70,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
       ),
       body: SingleChildScrollView(
@@ -140,13 +123,20 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
 
             // --- ADMIN / LANDLORD PROFILE HEADER CARD ---
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(24.0),
                 decoration: BoxDecoration(
                   color: darkBlue,
                   borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
                 ),
                 child: Column(
                   children: [
@@ -154,21 +144,24 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
                     Stack(
                       children: [
                         Container(
-                          width: 100,
-                          height: 100,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFC4C4C4),
+                          width: 90,
+                          height: 90,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.15),
                             shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white.withOpacity(0.3), width: 2),
                           ),
-                          child: const Icon(
-                            Icons.person,
-                            size: 75,
-                            color: Colors.black,
+                          child: const Center(
+                            child: Icon(
+                              Icons.person_rounded,
+                              size: 55,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                         Positioned(
-                          bottom: 2,
-                          right: 2,
+                          bottom: 0,
+                          right: 0,
                           child: Container(
                             decoration: const BoxDecoration(
                               color: Colors.white,
@@ -176,15 +169,15 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
                             ),
                             padding: const EdgeInsets.all(2),
                             child: const Icon(
-                              Icons.verified,
-                              color: Colors.lightBlueAccent,
-                              size: 24,
+                              Icons.verified_rounded,
+                              color: Colors.lightBlue,
+                              size: 22,
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
 
                     // Admin Name & Property Info
                     Text(
@@ -200,16 +193,16 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
                       'Property owner of Sunshine Dormitory',
                       style: TextStyle(
                         color: Colors.white70,
-                        fontSize: 14,
+                        fontSize: 13,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
 
                     // Ratings & Response Badge
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: const [
-                        Icon(Icons.star, color: Colors.amber, size: 16),
+                        Icon(Icons.star_rounded, color: Colors.amber, size: 18),
                         SizedBox(width: 4),
                         Text(
                           '4.8 (24 Reviews) • Fast Reply',
@@ -221,28 +214,28 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
 
-                    // Chat Button connecting to ChatDetailScreen & messege.dart
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: cardGrey,
-                        foregroundColor: Colors.black,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 40,
-                          vertical: 10,
+                    // Chat Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 44,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: darkBlue,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      onPressed: _openChatWithAdmin,
-                      child: const Text(
-                        'Chat',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        onPressed: _openChatWithAdmin,
+                        child: const Text(
+                          'Chat with Landlord',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -251,29 +244,26 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
               ),
             ),
 
-            const SizedBox(height: 20),
-            const Divider(color: Colors.black26, thickness: 1, height: 1),
+            const SizedBox(height: 24),
 
             // --- SECTION HEADER ---
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Text(
-                'Managed Listing & Rooms',
+                'Managed Listings & Rooms',
                 style: TextStyle(
-                  fontSize: 17,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Colors.grey.shade800,
                 ),
               ),
             ),
-            const Divider(color: Colors.black26, thickness: 1, height: 1),
-
             const SizedBox(height: 12),
 
             // --- FILTER CHIPS BAR ---
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
                 children: [
                   _buildFilterChip('All'),
@@ -287,27 +277,26 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
               ),
             ),
 
-            const SizedBox(height: 12),
-            const Divider(color: Colors.black26, thickness: 1, height: 1),
+            const SizedBox(height: 16),
 
             // --- MANAGED ROOMS LIST ---
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               itemCount: filteredRooms.length,
               itemBuilder: (context, index) {
                 final room = filteredRooms[index];
                 return _buildRoomCard(room);
               },
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
 
-  // Helper widget to construct filter pills
   Widget _buildFilterChip(String label) {
     final bool isSelected = selectedFilter == label;
     final int count = _getCategoryCount(label);
@@ -315,15 +304,18 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
     return ChoiceChip(
       label: Text('$label ($count)'),
       selected: isSelected,
-      selectedColor: cardGrey,
-      backgroundColor: cardGrey.withOpacity(0.5),
+      selectedColor: darkBlue,
+      backgroundColor: Colors.white,
       labelStyle: TextStyle(
-        color: Colors.black,
-        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        color: isSelected ? Colors.white : Colors.grey.shade700,
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
         fontSize: 13,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: isSelected ? darkBlue : Colors.grey.shade300,
+        ),
       ),
       onSelected: (bool selected) {
         if (selected) {
@@ -335,33 +327,36 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
     );
   }
 
-  // Helper widget to construct listing cards
   Widget _buildRoomCard(Map<String, dynamic> room) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16.0),
+      margin: const EdgeInsets.only(bottom: 14.0),
       padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
-        color: cardGrey,
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          // Photo Placeholder / Image Thumbnail
+          // Photo Placeholder
           Container(
-            width: 110,
-            height: 110,
+            width: 90,
+            height: 90,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              color: darkBlue.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(14),
             ),
-            child: const Center(
-              child: Text(
-                'Photo',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.black,
-                ),
+            child: Center(
+              child: Icon(
+                Icons.image_outlined,
+                size: 32,
+                color: darkBlue,
               ),
             ),
           ),
@@ -375,17 +370,17 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
                 Text(
                   room['title'],
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: Color(0xFF1E1E1E),
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   '${room['gender']} [${room['roomNo']}]',
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Colors.black87,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade600,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -393,8 +388,8 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
                   '${room['cost']} • ${room['availableCount']}',
                   style: const TextStyle(
                     fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF1E1E1E),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -410,13 +405,13 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: _getStatusColor(room['status']),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
                         room['status'],
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 12,
+                          fontSize: 11,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -426,10 +421,10 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
                       padding: EdgeInsets.zero,
                       icon: Icon(
                         room['isFavorite']
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                        color: room['isFavorite'] ? Colors.red : Colors.black,
-                        size: 22,
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border_rounded,
+                        color: room['isFavorite'] ? Colors.red : Colors.grey.shade400,
+                        size: 20,
                       ),
                       onPressed: () {
                         setState(() {

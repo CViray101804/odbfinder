@@ -3,84 +3,59 @@ import 'package:flutter/material.dart';
 class SafetyGuideScreen extends StatelessWidget {
   const SafetyGuideScreen({super.key});
 
-  final Color darkBlue = const Color(0xFF0A4F7D);
-  final Color cardGrey = const Color(0xFFD9D9D9);
+  final Color darkBlue = const Color(0xFF004D7A);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70),
-        child: AppBar(
-          backgroundColor: darkBlue,
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          toolbarHeight: 70,
-          title: Row(
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Colors.white,
-                  size: 22,
-                ),
-                onPressed: () => Navigator.pop(context),
-              ),
-              const SizedBox(width: 4),
-              const Text(
-                'Back',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        backgroundColor: darkBlue,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Safety Guide',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
+        ),
+        elevation: 0,
+        toolbarHeight: 70,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- TITLE ---
-            const Center(
-              child: Text(
-                'Safety Guide',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+            Text(
+              'Tips for safe boarding and bedspace hunting[cite: 11]',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade600,
               ),
             ),
-            const SizedBox(height: 8),
-            const Center(
-              child: Text(
-                'Tips for safe boarding and bedspace hunting',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
             // --- EMERGENCY NOTICE BANNER ---
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFEBEE),
+                color: Colors.red.shade50,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.redAccent.shade100),
+                border: Border.all(color: Colors.red.shade100),
               ),
               child: Row(
                 children: [
                   const Icon(Icons.warning_amber_rounded,
-                      color: Colors.red, size: 32),
-                  const SizedBox(width: 12),
+                      color: Colors.red, size: 28),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,10 +70,11 @@ class SafetyGuideScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 2),
                         Text(
-                          'Call national emergency hotline 911 or local police immediately if you feel in danger.',
+                          'Call national emergency hotline 911 or local police immediately if you feel in danger[cite: 11].',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.black87,
+                            height: 1.3,
                           ),
                         ),
                       ],
@@ -111,59 +87,44 @@ class SafetyGuideScreen extends StatelessWidget {
             const SizedBox(height: 24),
 
             // --- SAFETY TIPS ACCORDION LIST ---
-            _buildSectionHeader('Essential Safety Tips'),
+            const Text(
+              'Essential Safety Tips',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E1E1E),
+              ),
+            ),
+            const SizedBox(height: 12),
 
             _buildGuideCard(
-              icon: Icons.verified_user,
+              icon: Icons.verified_user_outlined,
               title: '1. Verify Landlords & Listings',
-              description:
-                  'Always inspect the property in person before paying deposits. Ensure the landlord provides legitimate proof of ownership or property management authorization.',
+              description: 'Always inspect the property in person before paying deposits. Ensure the landlord provides legitimate proof of ownership or property management authorization[cite: 11].',
             ),
             _buildGuideCard(
-              icon: Icons.lock_outline,
+              icon: Icons.lock_outline_rounded,
               title: '2. Check Security Features',
-              description:
-                  'Look for working door locks, main gate security, 24/7 CCTV coverage, and well-lit hallways/common areas before committing.',
+              description: 'Look for working door locks, main gate security, 24/7 CCTV coverage, and well-lit hallways/common areas before committing[cite: 11].',
             ),
             _buildGuideCard(
               icon: Icons.payments_outlined,
               title: '3. Secure Transactions',
-              description:
-                  'Never send full payments to unverified bank/GCash accounts. Always request an official receipt or written contract agreement.',
+              description: 'Never send full payments to unverified bank/GCash accounts. Always request an official receipt or written contract agreement[cite: 11].',
             ),
             _buildGuideCard(
-              icon: Icons.fire_extinguisher,
+              icon: Icons.fire_extinguisher_outlined,
               title: '4. Fire & Disaster Preparedness',
-              description:
-                  'Locate fire exits, extinguishers, and emergency escape windows in the building. Ensure smoke detectors are functional.',
+              description: 'Locate fire exits, extinguishers, and emergency escape windows in the building. Ensure smoke detectors are functional[cite: 11].',
             ),
             _buildGuideCard(
               icon: Icons.group_outlined,
               title: '5. Roommate & Visitor Safety',
-              description:
-                  'Know your house rules regarding visitors and curfew. Keep your personal valuables locked in secure storage at all times.',
+              description: 'Know your house rules regarding visitors and curfew. Keep your personal valuables locked in secure storage at all times[cite: 11].',
             ),
           ],
         ),
       ),
-    );
-  }
-
-  // --- HELPER WIDGETS ---
-  Widget _buildSectionHeader(String title) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-          ),
-        ),
-        const SizedBox(height: 12),
-      ],
     );
   }
 
@@ -175,18 +136,26 @@ class SafetyGuideScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12.0),
       decoration: BoxDecoration(
-        color: cardGrey,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: ExpansionTile(
         shape: const Border(),
-        leading: Icon(icon, color: darkBlue, size: 28),
+        collapsedShape: const Border(),
+        leading: Icon(icon, color: darkBlue, size: 24),
         title: Text(
           title,
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: Color(0xFF1E1E1E),
           ),
         ),
         children: [
@@ -198,9 +167,9 @@ class SafetyGuideScreen extends StatelessWidget {
             ),
             child: Text(
               description,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: Colors.black87,
+                color: Colors.grey.shade700,
                 height: 1.4,
               ),
             ),

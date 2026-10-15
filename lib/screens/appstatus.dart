@@ -5,12 +5,16 @@ class ApplicationStatusScreen extends StatefulWidget {
   final String dormName;
   final String location;
   final String price;
+  final bool hasActiveApplication;
+  final Function()? onCancelApplication;
 
   const ApplicationStatusScreen({
     super.key,
-    this.dormName = 'SunResidence Female Dorm (Bed B)',
-    this.location = 'Unit 402, Sampaloc, Manila',
-    this.price = '₱1,500 / month',
+    this.dormName = '',
+    this.location = '',
+    this.price = '',
+    this.hasActiveApplication = false,
+    this.onCancelApplication,
   });
 
   @override
@@ -21,15 +25,15 @@ class ApplicationStatusScreen extends StatefulWidget {
 class _ApplicationStatusScreenState extends State<ApplicationStatusScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _rotationController;
+  final Color darkBlue = const Color(0xFF004D7A);
 
   @override
   void initState() {
     super.initState();
-    // Continuous rotation animation controller
     _rotationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 3), // Takes 3 seconds per full turn
-    )..repeat(); // Loops indefinitely in one direction
+      duration: const Duration(seconds: 3),
+    )..repeat();
   }
 
   @override
@@ -40,319 +44,242 @@ class _ApplicationStatusScreenState extends State<ApplicationStatusScreen>
 
   @override
   Widget build(BuildContext context) {
-    const Color darkBlue = Color(0xFF0A4F7D);
-
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         backgroundColor: darkBlue,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Back',
+          'Application Status',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 22,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
-        toolbarHeight: 65,
+        toolbarHeight: 70,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Center(
-              child: Text(
-                'Application Status',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // =========================
-            // PENDING STATUS CARD WITH ROTATION ANIMATION
-            // =========================
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: const Color(0xFF1E88E5), width: 2),
-              ),
+      body: !widget.hasActiveApplication
+          ? Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  RotationTransition(
-                    turns: _rotationController,
-                    child: const Icon(
-                      Icons.hourglass_top_rounded,
-                      size: 48,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
+                  Icon(Icons.bookmark_border_rounded, size: 55, color: Colors.grey.shade400),
+                  const SizedBox(height: 12),
                   const Text(
-                    'Pending',
+                    'No Active Applications',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Color(0xFF1E1E1E),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 6),
                   Text(
-                    'Pending Admin Approval\nYour request for Bedspace #3 at ${widget.dormName} has been submitted successfully',
+                    'Explore rooms and submit a booking request to see your status here.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey.shade800,
-                      height: 1.3,
-                    ),
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 20),
-
-            // =========================
-            // STATUS TIMELINE
-            // =========================
-            _buildSectionHeader('Status Timeline'),
-            const SizedBox(height: 12),
-
-            _buildTimelineRow(
-              iconText: '(v)',
-              title: 'Application Submitted',
-              statusText: 'Date & Time',
-              isCompleted: true,
-            ),
-            _buildTimelineRow(
-              iconText: '(*)',
-              title: 'Under Review by Landlord\nEst. response within 24-48 hours',
-              statusText: 'In Progress',
-              isInProgress: true,
-            ),
-            _buildTimelineRow(
-              iconText: '( )',
-              title: 'Approval & Lease Signing',
-              statusText: 'Pending',
-            ),
-            _buildTimelineRow(
-              iconText: '( )',
-              title: 'Payment & Move-in Key',
-              statusText: 'Pending',
-            ),
-            const SizedBox(height: 16),
-
-            // =========================
-            // DETAILS SECTION
-            // =========================
-            _buildSectionHeader('Property & Application Details'),
-            const SizedBox(height: 12),
-
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(16),
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                      border: Border.all(color: Colors.orange.shade200, width: 1.5),
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade50,
+                            shape: BoxShape.circle,
+                          ),
+                          child: RotationTransition(
+                            turns: _rotationController,
+                            child: Icon(
+                              Icons.hourglass_top_rounded,
+                              size: 36,
+                              color: Colors.orange.shade700,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        const Text(
+                          'Pending Review',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1E1E1E),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Your request for ${widget.dormName} has been submitted successfully and is awaiting admin approval.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey.shade600,
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Property & Application Details',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E1E1E),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: darkBlue.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Icon(Icons.home_outlined, size: 36, color: darkBlue),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.dormName,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF1E1E1E),
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                widget.location,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Rent: ${widget.price}',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: darkBlue,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  Row(
                     children: [
-                      Text(
-                        widget.dormName,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                      Expanded(
+                        child: SizedBox(
+                          height: 50,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: darkBlue,
+                              elevation: 1,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                side: BorderSide(color: darkBlue.withOpacity(0.3)),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ChatDetailScreen(
+                                    landlordName: widget.dormName,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'Chat with Landlord',
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                            ),
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        widget.location,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade700,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Rent: ${widget.price}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(
-                        'Move-in: [Date]',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade700,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: SizedBox(
+                          height: 50,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red.shade50,
+                              foregroundColor: Colors.red,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                side: BorderSide(color: Colors.red.shade100),
+                              ),
+                            ),
+                            onPressed: () => _showCancelDialog(context),
+                            child: const Text(
+                              'Cancel Request',
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // =========================
-            // ACTION BUTTONS
-            // =========================
-            _buildSectionHeader('Need Help or Changes?'),
-            const SizedBox(height: 16),
-
-            Row(
-              children: [
-                Expanded(
-                  child: SizedBox(
-                    height: 48,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey.shade300,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context, rootNavigator: true).push(
-                          MaterialPageRoute(
-                            builder: (context) => ChatDetailScreen(
-                              landlordName: widget.dormName,
-                              shouldGoToMessagesOnBack: false,
-                            ),
-                          ),
-                        );
-                      },
-                      child: const Text(
-                        'Chat with\nLandlord',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: SizedBox(
-                    height: 48,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                      ),
-                      onPressed: () {
-                        _showCancelDialog(context);
-                      },
-                      child: const Text(
-                        'Cancel Request',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionHeader(String title) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
-          ),
-        ),
-        const Divider(color: Colors.black, thickness: 1),
-      ],
-    );
-  }
-
-  Widget _buildTimelineRow({
-    required String iconText,
-    required String title,
-    required String statusText,
-    bool isCompleted = false,
-    bool isInProgress = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            iconText,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: isCompleted
-                  ? Colors.green
-                  : (isInProgress ? Colors.blue : Colors.black54),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight:
-                    isInProgress ? FontWeight.bold : FontWeight.normal,
-                color: Colors.black,
+                ],
               ),
             ),
-          ),
-          Text(
-            statusText,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight:
-                  isInProgress ? FontWeight.bold : FontWeight.normal,
-              color: isCompleted
-                  ? Colors.green
-                  : (isInProgress ? Colors.blue : Colors.grey.shade700),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -360,31 +287,35 @@ class _ApplicationStatusScreenState extends State<ApplicationStatusScreen>
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Cancel Request?'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Cancel Request?', style: TextStyle(fontWeight: FontWeight.bold)),
         content: const Text(
-          'Are you sure you want to cancel your booking application for this room?',
+          'Are you sure you want to cancel your booking application? This action will move it to your history records.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('No'),
+            child: const Text('No', style: TextStyle(color: Colors.grey)),
           ),
-          TextButton(
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
             onPressed: () {
               Navigator.pop(dialogContext);
+              if (widget.onCancelApplication != null) {
+                widget.onCancelApplication!();
+              }
               Navigator.pop(context);
-
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Booking request cancelled successfully.'),
-                  backgroundColor: Colors.red,
+                  content: Text('Booking request cancelled and added to history.'),
+                  duration: Duration(seconds: 2),
                 ),
               );
             },
-            child: const Text(
-              'Yes, Cancel',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Yes, Cancel', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

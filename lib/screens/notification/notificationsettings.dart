@@ -10,7 +10,7 @@ class NotificationSettingsScreen extends StatefulWidget {
 
 class _NotificationSettingsScreenState
     extends State<NotificationSettingsScreen> {
-  final Color darkBlue = const Color(0xFF0A4F7D);
+  final Color darkBlue = const Color(0xFF004D7A);
 
   // Notification Preferences
   bool _pushNotifications = true;
@@ -23,57 +23,37 @@ class _NotificationSettingsScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70),
-        child: AppBar(
-          backgroundColor: darkBlue,
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          toolbarHeight: 70,
-          title: Row(
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Colors.white,
-                  size: 22,
-                ),
-                onPressed: () => Navigator.pop(context),
-              ),
-              const SizedBox(width: 4),
-              const Text(
-                'Back',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        backgroundColor: darkBlue,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Notification Settings',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
+        ),
+        elevation: 0,
+        toolbarHeight: 70,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Center(
-              child: Text(
-                'Notification Settings',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
             // --- GENERAL NOTIFICATIONS ---
             _buildSectionHeader('General'),
+            const SizedBox(height: 10),
             _buildSwitchTile(
+              icon: Icons.notifications_active_outlined,
               title: 'Push Notifications',
               subtitle: 'Allow app to send alert popups',
               value: _pushNotifications,
@@ -84,11 +64,13 @@ class _NotificationSettingsScreenState
               },
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
             // --- ACTIVITY NOTIFICATIONS ---
             _buildSectionHeader('Alerts & Messages'),
+            const SizedBox(height: 10),
             _buildSwitchTile(
+              icon: Icons.chat_bubble_outline_rounded,
               title: 'Chat Messages',
               subtitle: 'Notifications for new landlord/tenant messages',
               value: _chatMessages,
@@ -99,6 +81,7 @@ class _NotificationSettingsScreenState
               },
             ),
             _buildSwitchTile(
+              icon: Icons.bookmark_border_rounded,
               title: 'Booking & Application Updates',
               subtitle: 'Status changes on your bedspace reservations',
               value: _bookingUpdates,
@@ -109,6 +92,7 @@ class _NotificationSettingsScreenState
               },
             ),
             _buildSwitchTile(
+              icon: Icons.local_offer_outlined,
               title: 'Promotions & Announcements',
               subtitle: 'Special deals, room discounts, and news',
               value: _promosAndOffers,
@@ -119,11 +103,13 @@ class _NotificationSettingsScreenState
               },
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
             // --- SOUND & VIBRATION ---
             _buildSectionHeader('Sound & Feedback'),
+            const SizedBox(height: 10),
             _buildSwitchTile(
+              icon: Icons.volume_up_outlined,
               title: 'Sound',
               subtitle: 'Play sound for incoming notifications',
               value: _soundEnabled,
@@ -134,6 +120,7 @@ class _NotificationSettingsScreenState
               },
             ),
             _buildSwitchTile(
+              icon: Icons.vibration_rounded,
               title: 'Vibration',
               subtitle: 'Vibrate on receiving alerts',
               value: _vibrationEnabled,
@@ -143,6 +130,7 @@ class _NotificationSettingsScreenState
                 });
               },
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -151,23 +139,18 @@ class _NotificationSettingsScreenState
 
   // --- HELPER WIDGETS ---
   Widget _buildSectionHeader(String title) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-          ),
-        ),
-        const SizedBox(height: 8),
-      ],
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFF1E1E1E),
+      ),
     );
   }
 
   Widget _buildSwitchTile({
+    required IconData icon,
     required String title,
     required String subtitle,
     required bool value,
@@ -176,24 +159,40 @@ class _NotificationSettingsScreenState
     return Container(
       margin: const EdgeInsets.only(bottom: 12.0),
       decoration: BoxDecoration(
-        color: const Color(0xFFD9D9D9),
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: SwitchListTile(
         activeColor: darkBlue,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        secondary: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: darkBlue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: darkBlue, size: 20),
+        ),
         title: Text(
           title,
           style: const TextStyle(
-            fontSize: 16,
+            fontSize: 15,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: Color(0xFF1E1E1E),
           ),
         ),
         subtitle: Text(
           subtitle,
-          style: const TextStyle(
-            fontSize: 13,
-            color: Colors.black87,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey.shade600,
           ),
         ),
         value: value,

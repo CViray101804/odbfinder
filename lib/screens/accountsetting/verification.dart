@@ -8,49 +8,46 @@ class VerificationScreen extends StatefulWidget {
 }
 
 class _VerificationScreenState extends State<VerificationScreen> {
-  final Color darkBlue = const Color(0xFF0A4F7D);
-  final Color cardGrey = const Color(0xFFD9D9D9);
+  final Color darkBlue = const Color(0xFF004D7A);
 
   // Status tracking: 'Unverified', 'Pending', or 'Verified'
   String verificationStatus = 'Unverified';
   bool isFileSelected = false;
 
+  Color _getStatusColor() {
+    switch (verificationStatus) {
+      case 'Pending':
+        return Colors.orange;
+      case 'Verified':
+        return Colors.green;
+      case 'Unverified':
+      default:
+        return Colors.red.shade600;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70),
-        child: AppBar(
-          backgroundColor: darkBlue,
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(16),
-            ),
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        backgroundColor: darkBlue,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Student Verification',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
-          title: Row(
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Colors.white,
-                  size: 22,
-                ),
-                onPressed: () => Navigator.pop(context),
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                'Student Verification',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
+        ),
+        elevation: 0,
+        toolbarHeight: 70,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
       ),
       body: SingleChildScrollView(
@@ -62,11 +59,18 @@ class _VerificationScreenState extends State<VerificationScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(
                 horizontal: 20.0,
-                vertical: 24.0,
+                vertical: 28.0,
               ),
               decoration: BoxDecoration(
-                color: cardGrey,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,27 +91,28 @@ class _VerificationScreenState extends State<VerificationScreen> {
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontSize: 13,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
 
                   const Text(
                     'Upload Student ID or COR',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Color(0xFF1E1E1E),
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const Text(
+                  Text(
                     'Please submit a clear photo of your valid Student ID or Certificate of Registration (COR) to verify your account.',
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.black87,
+                      color: Colors.grey.shade600,
+                      height: 1.4,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -115,21 +120,19 @@ class _VerificationScreenState extends State<VerificationScreen> {
                   // Image Upload Area
                   GestureDetector(
                     onTap: () {
-                      // Trigger image picker logic here
                       setState(() {
                         isFileSelected = !isFileSelected;
                       });
                     },
                     child: Container(
                       width: double.infinity,
-                      height: 180,
+                      height: 160,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: isFileSelected ? Colors.green.shade50 : Colors.grey.shade50,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: darkBlue.withOpacity(0.5),
-                          width: 2,
-                          style: BorderStyle.solid,
+                          color: isFileSelected ? Colors.green : Colors.grey.shade300,
+                          width: 1.5,
                         ),
                       ),
                       child: Column(
@@ -137,9 +140,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
                         children: [
                           Icon(
                             isFileSelected
-                                ? Icons.check_circle_outline
+                                ? Icons.check_circle_outline_rounded
                                 : Icons.cloud_upload_outlined,
-                            size: 48,
+                            size: 42,
                             color: isFileSelected ? Colors.green : darkBlue,
                           ),
                           const SizedBox(height: 10),
@@ -151,8 +154,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
                               color: isFileSelected
-                                  ? Colors.green
-                                  : Colors.black87,
+                                  ? Colors.green.shade700
+                                  : const Color(0xFF1E1E1E),
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -160,29 +163,28 @@ class _VerificationScreenState extends State<VerificationScreen> {
                             isFileSelected
                                 ? 'Tap again to change file'
                                 : 'Supports JPG, PNG, or PDF',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
-                              color: Colors.black45,
+                              color: Colors.grey.shade500,
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 32),
 
                   // Submit Button
-                  Center(
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 36,
-                          vertical: 12,
-                        ),
+                        backgroundColor: isFileSelected ? darkBlue : Colors.grey.shade200,
+                        foregroundColor: isFileSelected ? Colors.white : Colors.grey.shade500,
+                        elevation: isFileSelected ? 2 : 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(14),
                         ),
                       ),
                       onPressed: isFileSelected
@@ -195,14 +197,14 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                   content: Text(
                                     'Verification submitted successfully!',
                                   ),
+                                  duration: Duration(seconds: 2),
                                 ),
                               );
                             }
                           : null,
-                      child: Text(
+                      child: const Text(
                         'Submit Verification',
                         style: TextStyle(
-                          color: isFileSelected ? darkBlue : Colors.grey,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -216,17 +218,5 @@ class _VerificationScreenState extends State<VerificationScreen> {
         ),
       ),
     );
-  }
-
-  Color _getStatusColor() {
-    switch (verificationStatus) {
-      case 'Pending':
-        return Colors.orange;
-      case 'Verified':
-        return Colors.green;
-      case 'Unverified':
-      default:
-        return Colors.red.shade600;
-    }
   }
 }

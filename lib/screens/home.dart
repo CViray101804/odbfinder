@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:odbfinder/screens/messege.dart';
-import 'package:odbfinder/screens/profile.dart';
+import 'package:odbfinder/screens/profile.dart' hide SavedScreen;
 import 'package:odbfinder/screens/roomdesc.dart';
-import 'package:odbfinder/screens/dorm_model.dart';
+import 'package:odbfinder/screens/saved.dart';
 
 // ---------------------------------------------------------------------------
 // DORM MODEL
@@ -54,7 +54,12 @@ final List<Dorm> sampleDorms = [
 // MAIN HOME SCREEN WITH NAVIGATION
 // ---------------------------------------------------------------------------
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String userEmail;
+
+  const HomeScreen({
+    super.key,
+    this.userEmail = 'user@example.com',
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -62,14 +67,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 2;
-
   final Set<int> _favoriteIds = {};
+  final Color darkBlue = const Color(0xFF004D7A);
 
-  final Color darkBlue = const Color(0xFF0A4F7D);
-
-  // -------------------------------------------------------------------------
-  // FAVORITE TOGGLE
-  // -------------------------------------------------------------------------
   void _toggleFavorite(int dormId) {
     setState(() {
       if (_favoriteIds.contains(dormId)) {
@@ -80,57 +80,50 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // -------------------------------------------------------------------------
-  // SCREENS
-  // -------------------------------------------------------------------------
   List<Widget> _getScreens() {
+    final savedDormsList = sampleDorms
+        .where((dorm) => _favoriteIds.contains(dorm.id))
+        .toList();
+
     return [
       const MessagesScreen(),
-
       const NotificationsScreenContent(),
-
       HomeContentBody(
         favoriteIds: _favoriteIds,
         onToggleFavorite: _toggleFavorite,
       ),
-
-      FavoritesScreenContent(
-        favoriteIds: _favoriteIds,
-        onToggleFavorite: _toggleFavorite,
+      SavedScreen(
+        savedDorms: savedDormsList,
+        onSavedRemoved: (dorm) {
+          _toggleFavorite(dorm.id);
+        },
       ),
-
-      const ProfileScreen(),
+      ProfileScreen(
+        userEmail: widget.userEmail,
+        userName: widget.userEmail,
+      ),
     ];
   }
 
-  // -------------------------------------------------------------------------
-  // APP BAR TITLE
-  // -------------------------------------------------------------------------
   String _getAppBarTitle() {
     switch (_currentIndex) {
       case 0:
         return 'Messages';
-
       case 1:
         return 'Notifications';
-
       case 2:
-        return 'OBD FINDER';
-
+        return 'ODB FINDER';
       case 3:
-        return 'Favorites';
-
+        return 'Saved Rooms';
       default:
-        return 'OBD FINDER';
+        return 'ODB FINDER';
     }
   }
 
-  // -------------------------------------------------------------------------
-  // BUILD
-  // -------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade50,
       appBar: _currentIndex == 4
           ? null
           : AppBar(
@@ -139,52 +132,46 @@ class _HomeScreenState extends State<HomeScreen> {
                 _getAppBarTitle(),
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 24,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
                 ),
               ),
               elevation: 0,
-              toolbarHeight: 80,
+              toolbarHeight: 70,
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(16),
+                  bottom: Radius.circular(20),
                 ),
               ),
             ),
-
-      // Keep only the selected screen visible
       body: IndexedStack(index: _currentIndex, children: _getScreens()),
-
-      // ---------------------------------------------------------------------
-      // BOTTOM NAVIGATION
-      // ---------------------------------------------------------------------
       bottomNavigationBar: Container(
-        height: 70,
+        height: 75,
         decoration: BoxDecoration(
-          color: darkBlue,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 15,
+              offset: const Offset(0, -5),
+            ),
+          ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildNavItem(icon: Icons.chat_bubble_rounded, index: 0),
-
-            _buildNavItem(icon: Icons.notifications, index: 1, showBadge: true),
-
-            _buildNavItem(icon: Icons.home, index: 2),
-
-            _buildNavItem(icon: Icons.favorite, index: 3),
-
-            _buildNavItem(icon: Icons.person, index: 4),
+            _buildNavItem(icon: Icons.chat_bubble_outline_rounded, index: 0),
+            _buildNavItem(icon: Icons.notifications_outlined, index: 1, showBadge: true),
+            _buildNavItem(icon: Icons.home_rounded, index: 2),
+            _buildNavItem(icon: Icons.bookmark_border_rounded, index: 3),
+            _buildNavItem(icon: Icons.person_outline_rounded, index: 4),
           ],
         ),
       ),
     );
   }
 
-  // -------------------------------------------------------------------------
-  // BOTTOM NAV ITEM
-  // -------------------------------------------------------------------------
   Widget _buildNavItem({
     required IconData icon,
     required int index,
@@ -198,23 +185,21 @@ class _HomeScreenState extends State<HomeScreen> {
           _currentIndex = index;
         });
       },
-      child: Container(
-        padding: const EdgeInsets.all(8),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected
-              ? Colors.white.withOpacity(0.2)
-              : Colors.transparent,
-          shape: BoxShape.circle,
+          color: isSelected ? darkBlue.withOpacity(0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Stack(
           clipBehavior: Clip.none,
           children: [
             Icon(
               icon,
-              size: isSelected ? 30 : 26,
-              color: isSelected ? Colors.white : Colors.black,
+              size: 26,
+              color: isSelected ? darkBlue : Colors.grey.shade600,
             ),
-
             if (showBadge)
               Positioned(
                 right: -2,
@@ -226,8 +211,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     shape: BoxShape.circle,
                   ),
                   constraints: const BoxConstraints(
-                    minWidth: 10,
-                    minHeight: 10,
+                    minWidth: 8,
+                    minHeight: 8,
                   ),
                 ),
               ),
@@ -250,17 +235,24 @@ class NotificationsScreenContent extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.notifications_off_outlined,
-            size: 70,
-            color: Colors.grey.shade400,
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.notifications_off_outlined,
+              size: 50,
+              color: Colors.grey.shade400,
+            ),
           ),
           const SizedBox(height: 16),
           const Text(
-            'No current Notification yet',
+            'No notifications yet',
             style: TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
               color: Colors.black54,
             ),
           ),
@@ -271,66 +263,7 @@ class NotificationsScreenContent extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// FAVORITES CONTENT
-// ---------------------------------------------------------------------------
-class FavoritesScreenContent extends StatelessWidget {
-  final Set<int> favoriteIds;
-  final Function(int) onToggleFavorite;
-
-  const FavoritesScreenContent({
-    super.key,
-    required this.favoriteIds,
-    required this.onToggleFavorite,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final favoritedDorms = sampleDorms
-        .where((dorm) => favoriteIds.contains(dorm.id))
-        .toList();
-
-    // No favorites
-    if (favoritedDorms.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.favorite_border, size: 70, color: Colors.grey.shade400),
-            const SizedBox(height: 16),
-            const Text(
-              'No Saved Favorites Yet',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.black54,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    // Favorites list
-    return ListView.separated(
-      padding: const EdgeInsets.all(16),
-      itemCount: favoritedDorms.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        final dorm = favoritedDorms[index];
-
-        return buildExploreCard(
-          context: context,
-          dorm: dorm,
-          isFavorited: true,
-          onFavoriteTap: () => onToggleFavorite(dorm.id),
-        );
-      },
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// HOME CONTENT BODY
+// HOME CONTENT BODY (Restored Search, Filter, Recommended, Recently Viewed)
 // ---------------------------------------------------------------------------
 class HomeContentBody extends StatefulWidget {
   final Set<int> favoriteIds;
@@ -348,42 +281,25 @@ class HomeContentBody extends StatefulWidget {
 
 class _HomeContentBodyState extends State<HomeContentBody> {
   final TextEditingController _searchController = TextEditingController();
-
   RangeValues _priceRange = const RangeValues(1000, 5000);
-
   double _maxDistance = 2.0;
-
   String _selectedGender = 'Any';
+  final Color darkBlue = const Color(0xFF004D7A);
 
-  final Color lightGrey = const Color(0xFFE0E0E0);
-
-  final Color cardGrey = const Color(0xFFD4D4D4);
-
-  final Color darkBlue = const Color(0xFF0A4F7D);
-
-  // -------------------------------------------------------------------------
-  // DISPOSE SEARCH CONTROLLER
-  // -------------------------------------------------------------------------
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
 
-  // -------------------------------------------------------------------------
-  // FILTER MODAL
-  // -------------------------------------------------------------------------
   void _openFilterModal() {
     RangeValues tempPriceRange = _priceRange;
-
     double tempMaxDistance = _maxDistance;
-
     String tempGender = _selectedGender;
 
     final TextEditingController minPriceController = TextEditingController(
       text: tempPriceRange.start.round().toString(),
     );
-
     final TextEditingController maxPriceController = TextEditingController(
       text: tempPriceRange.end.round().toString(),
     );
@@ -391,44 +307,66 @@ class _HomeContentBodyState extends State<HomeContentBody> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
             return Padding(
               padding: EdgeInsets.only(
-                left: 20,
-                right: 20,
+                left: 24,
+                right: 24,
                 top: 20,
-                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 24,
               ),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Filter Dormitories',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1E1E1E),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            setModalState(() {
+                              tempPriceRange = const RangeValues(1000, 5000);
+                              tempMaxDistance = 2.0;
+                              tempGender = 'Any';
+                              minPriceController.text = '1000';
+                              maxPriceController.text = '5000';
+                            });
+                          },
+                          child: const Text(
+                            'Reset All',
+                            style: TextStyle(
+                              color: Colors.redAccent,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Divider(height: 24),
                     const Text(
-                      'Filter Options',
+                      'Budget Range per Month',
                       style: TextStyle(
-                        fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Color(0xFF333333),
                       ),
                     ),
-
-                    const SizedBox(height: 20),
-
-                    const Text(
-                      'Budget Range (₱)',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
+                    const SizedBox(height: 12),
                     Row(
                       children: [
                         Expanded(
@@ -436,73 +374,46 @@ class _HomeContentBodyState extends State<HomeContentBody> {
                             controller: minPriceController,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
-                              labelText: 'Min Price',
+                              labelText: 'Min',
+                              prefixText: '₱ ',
+                              filled: true,
+                              fillColor: Colors.grey.shade50,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
+                                borderSide: BorderSide(color: Colors.grey.shade300),
                               ),
                             ),
-                            onChanged: (val) {
-                              final double? minVal = double.tryParse(val);
-
-                              if (minVal != null &&
-                                  minVal >= 500 &&
-                                  minVal <= tempPriceRange.end) {
-                                setModalState(() {
-                                  tempPriceRange = RangeValues(
-                                    minVal,
-                                    tempPriceRange.end,
-                                  );
-                                });
-                              }
-                            },
                           ),
                         ),
-
-                        const SizedBox(width: 12),
-
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Text('-', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                        ),
                         Expanded(
                           child: TextField(
                             controller: maxPriceController,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
-                              labelText: 'Max Price',
+                              labelText: 'Max',
+                              prefixText: '₱ ',
+                              filled: true,
+                              fillColor: Colors.grey.shade50,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
+                                borderSide: BorderSide(color: Colors.grey.shade300),
                               ),
                             ),
-                            onChanged: (val) {
-                              final double? maxVal = double.tryParse(val);
-
-                              if (maxVal != null &&
-                                  maxVal <= 10000 &&
-                                  maxVal >= tempPriceRange.start) {
-                                setModalState(() {
-                                  tempPriceRange = RangeValues(
-                                    tempPriceRange.start,
-                                    maxVal,
-                                  );
-                                });
-                              }
-                            },
                           ),
                         ),
                       ],
                     ),
-
                     RangeSlider(
                       values: tempPriceRange,
                       min: 500,
                       max: 10000,
                       divisions: 19,
                       activeColor: darkBlue,
+                      inactiveColor: Colors.grey.shade200,
                       labels: RangeLabels(
                         '₱${tempPriceRange.start.round()}',
                         '₱${tempPriceRange.end.round()}',
@@ -510,130 +421,114 @@ class _HomeContentBodyState extends State<HomeContentBody> {
                       onChanged: (RangeValues values) {
                         setModalState(() {
                           tempPriceRange = values;
-
-                          minPriceController.text = values.start
-                              .round()
-                              .toString();
-
-                          maxPriceController.text = values.end
-                              .round()
-                              .toString();
+                          minPriceController.text = values.start.round().toString();
+                          maxPriceController.text = values.end.round().toString();
                         });
                       },
                     ),
-
                     const SizedBox(height: 16),
-
-                    Text(
-                      'Max Distance from School: '
-                      '${tempMaxDistance.toStringAsFixed(1)} km',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Max Distance from School',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Color(0xFF333333),
+                          ),
+                        ),
+                        Text(
+                          '${tempMaxDistance.toStringAsFixed(1)} km',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: darkBlue,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
                     ),
-
                     Slider(
                       value: tempMaxDistance,
                       min: 0.5,
                       max: 10.0,
                       divisions: 19,
                       activeColor: darkBlue,
-                      label: '${tempMaxDistance.toStringAsFixed(1)} km',
+                      inactiveColor: Colors.grey.shade200,
                       onChanged: (double value) {
                         setModalState(() {
                           tempMaxDistance = value;
                         });
                       },
                     ),
-
                     const SizedBox(height: 16),
-
                     const Text(
-                      'Dormitory Preference',
+                      'Gender Preference',
                       style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Color(0xFF333333),
                       ),
                     ),
-
-                    const SizedBox(height: 8),
-
+                    const SizedBox(height: 10),
                     Row(
-                      children: [
-                        _buildGenderChip('Any', tempGender, (selected) {
-                          setModalState(() => tempGender = selected);
-                        }),
-
-                        const SizedBox(width: 8),
-
-                        _buildGenderChip('Male', tempGender, (selected) {
-                          setModalState(() => tempGender = selected);
-                        }),
-
-                        const SizedBox(width: 8),
-
-                        _buildGenderChip('Female', tempGender, (selected) {
-                          setModalState(() => tempGender = selected);
-                        }),
-                      ],
+                      children: ['Any', 'Male', 'Female'].map((gender) {
+                        bool isSelected = tempGender == gender;
+                        return Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                backgroundColor: isSelected ? darkBlue : Colors.white,
+                                side: BorderSide(
+                                  color: isSelected ? darkBlue : Colors.grey.shade300,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              onPressed: () {
+                                setModalState(() {
+                                  tempGender = gender;
+                                });
+                              },
+                              child: Text(
+                                gender,
+                                style: TextStyle(
+                                  color: isSelected ? Colors.white : Colors.black87,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     ),
-
                     const SizedBox(height: 24),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(48),
-                              side: BorderSide(color: darkBlue),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              'Cancel',
-                              style: TextStyle(color: darkBlue, fontSize: 16),
-                            ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: darkBlue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
                           ),
                         ),
-
-                        const SizedBox(width: 12),
-
-                        Expanded(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(48),
-                              backgroundColor: darkBlue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _priceRange = tempPriceRange;
-
-                                _maxDistance = tempMaxDistance;
-
-                                _selectedGender = tempGender;
-                              });
-
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              'Save',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
+                        onPressed: () {
+                          setState(() {
+                            _priceRange = tempPriceRange;
+                            _maxDistance = tempMaxDistance;
+                            _selectedGender = tempGender;
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          'Apply Filters',
+                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                         ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
@@ -645,220 +540,222 @@ class _HomeContentBodyState extends State<HomeContentBody> {
     );
   }
 
-  // -------------------------------------------------------------------------
-  // GENDER CHIP
-  // -------------------------------------------------------------------------
-  Widget _buildGenderChip(
-    String label,
-    String currentSelection,
-    Function(String) onSelect,
-  ) {
-    final bool isSelected = currentSelection == label;
-
-    return ChoiceChip(
-      label: Text(label),
-      selected: isSelected,
-      selectedColor: darkBlue,
-      labelStyle: TextStyle(
-        color: isSelected ? Colors.white : Colors.black,
-        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-      ),
-      onSelected: (bool selected) {
-        if (selected) {
-          onSelect(label);
-        }
-      },
-    );
-  }
-
-  // -------------------------------------------------------------------------
-  // HOME BODY
-  // -------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
+    // Filter sample dorms based on selected gender preference
+    final filteredDorms = sampleDorms.where((dorm) {
+      if (_selectedGender == 'Any') return true;
+      if (_selectedGender == 'Male') {
+        return dorm.preference.contains('Male') && !dorm.preference.contains('Female');
+      }
+      if (_selectedGender == 'Female') {
+        return dorm.preference.contains('Female');
+      }
+      return true;
+    }).toList();
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // --- SEARCH AND FILTER ROW ---
           Row(
             children: [
               Expanded(child: _buildSearchBar()),
-
               const SizedBox(width: 12),
-
               _buildFilterButton(),
             ],
           ),
-
           const SizedBox(height: 24),
 
-          _buildSectionTitle('Recommended'),
-
-          const Divider(color: Colors.black54),
-
-          const SizedBox(height: 8),
-
-          _buildHorizontalCardList(),
-
-          const SizedBox(height: 24),
-
-          _buildSectionTitle('Recently Viewed'),
-
-          const Divider(color: Colors.black54),
-
-          const SizedBox(height: 8),
-
-          _buildHorizontalCardList(),
-
-          const SizedBox(height: 24),
-
-          const Text(
-            'Explore',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Colors.black,
-            ),
-          ),
-
-          const Divider(color: Colors.black54),
-
+          // --- RECOMMENDED SECTION ---
+          _buildSectionTitle('Recommended For You'),
           const SizedBox(height: 12),
+          _buildHorizontalCardList(filteredDorms),
+          const SizedBox(height: 24),
 
-          // -----------------------------------------------------------------
-          // EXPLORE DORM LIST
-          // -----------------------------------------------------------------
-          ...sampleDorms.map((dorm) {
-            final bool isFavorited = widget.favoriteIds.contains(dorm.id);
+          // --- RECENTLY VIEWED SECTION ---
+          _buildSectionTitle('Recently Viewed'),
+          const SizedBox(height: 12),
+          _buildHorizontalCardList(filteredDorms),
+          const SizedBox(height: 24),
 
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12.0),
-              child: buildExploreCard(
-                context: context,
-                dorm: dorm,
-                isFavorited: isFavorited,
-                onFavoriteTap: () => widget.onToggleFavorite(dorm.id),
-              ),
-            );
-          }),
+          // --- EXPLORE ALL SECTION ---
+          _buildSectionTitle('Explore All'),
+          const SizedBox(height: 12),
+          filteredDorms.isEmpty
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: Center(
+                    child: Text(
+                      'No dormitories match your selected filter.',
+                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                    ),
+                  ),
+                )
+              : Column(
+                  children: filteredDorms.map((dorm) {
+                    final bool isFavorited = widget.favoriteIds.contains(dorm.id);
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: buildExploreCard(
+                        context: context,
+                        dorm: dorm,
+                        isFavorited: isFavorited,
+                        onFavoriteTap: () => widget.onToggleFavorite(dorm.id),
+                      ),
+                    );
+                  }).toList(),
+                ),
         ],
       ),
     );
   }
 
-  // -------------------------------------------------------------------------
-  // SEARCH BAR
-  // -------------------------------------------------------------------------
   Widget _buildSearchBar() {
     return Container(
-      height: 45,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      height: 48,
       decoration: BoxDecoration(
-        color: lightGrey,
-        borderRadius: BorderRadius.circular(24),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: TextField(
         controller: _searchController,
-        onChanged: (value) {
-          setState(() {});
-        },
-        decoration: const InputDecoration(
-          hintText: 'Search...',
+        decoration: InputDecoration(
+          hintText: 'Search dorms...',
+          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+          prefixIcon: Icon(Icons.search, color: Colors.grey.shade500, size: 20),
           border: InputBorder.none,
-          suffixIcon: Icon(Icons.search, color: Colors.black, size: 24),
-          suffixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
+          contentPadding: const EdgeInsets.symmetric(vertical: 12),
         ),
       ),
     );
   }
 
-  // -------------------------------------------------------------------------
-  // FILTER BUTTON
-  // -------------------------------------------------------------------------
   Widget _buildFilterButton() {
     return GestureDetector(
       onTap: _openFilterModal,
       child: Container(
-        height: 45,
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        height: 48,
+        padding: const EdgeInsets.symmetric(horizontal: 18),
         decoration: BoxDecoration(
-          color: lightGrey,
-          borderRadius: BorderRadius.circular(24),
+          color: darkBlue,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: darkBlue.withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: const Center(
-          child: Text(
-            'Filter',
-            style: TextStyle(fontSize: 16, color: Colors.black87),
+          child: Row(
+            children: [
+              Icon(Icons.tune_rounded, color: Colors.white, size: 18),
+              SizedBox(width: 6),
+              Text(
+                'Filter',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  // -------------------------------------------------------------------------
-  // SECTION TITLE
-  // -------------------------------------------------------------------------
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
       style: const TextStyle(
         fontSize: 18,
-        fontWeight: FontWeight.w500,
-        color: Colors.black,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFF1E1E1E),
       ),
     );
   }
 
-  // -------------------------------------------------------------------------
-  // HORIZONTAL CARD LIST
-  // -------------------------------------------------------------------------
-  Widget _buildHorizontalCardList() {
-    return Row(
-      children: [
-        _buildPhotoCard(),
-
-        const SizedBox(width: 16),
-
-        _buildPhotoCard(),
-
-        const SizedBox(width: 12),
-
-        Container(
-          padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(color: lightGrey, shape: BoxShape.circle),
-          child: const Icon(Icons.chevron_right, size: 20, color: Colors.black),
-        ),
-      ],
+  Widget _buildHorizontalCardList(List<Dorm> dorms) {
+    if (dorms.isEmpty) return const SizedBox.shrink();
+    return SizedBox(
+      height: 185,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: dorms.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 14),
+        itemBuilder: (context, index) {
+          final dorm = dorms[index];
+          return _buildPhotoCard(dorm);
+        },
+      ),
     );
   }
 
-  // -------------------------------------------------------------------------
-  // PHOTO CARD
-  // -------------------------------------------------------------------------
-  Widget _buildPhotoCard() {
+  Widget _buildPhotoCard(Dorm dorm) {
     return Container(
-      width: 130,
-      height: 180,
+      width: 140,
       decoration: BoxDecoration(
-        color: cardGrey,
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 100,
+            height: 110,
             width: double.infinity,
-            margin: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              color: Colors.grey.shade200,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
             ),
             child: const Center(
-              child: Text(
-                'Photo',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
+              child: Icon(Icons.image_outlined, color: Colors.grey, size: 30),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  dorm.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  dorm.priceAndRating.split('•').first,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -869,12 +766,6 @@ class _HomeContentBodyState extends State<HomeContentBody> {
 
 // ---------------------------------------------------------------------------
 // GLOBAL EXPLORE CARD WIDGET
-// ---------------------------------------------------------------------------
-//
-// IMPORTANT:
-// This card now opens RoomDetailScreen from roomdesc.dart.
-//
-// DO NOT create another RoomDetailScreen class in this file.
 // ---------------------------------------------------------------------------
 Widget buildExploreCard({
   required BuildContext context,
@@ -896,37 +787,33 @@ Widget buildExploreCard({
       );
     },
     child: Container(
-      height: 120,
-      padding: const EdgeInsets.all(8),
+      height: 115,
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: const Color(0xFFD4D4D4),
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          // ---------------------------------------------------------------
-          // PHOTO
-          // ---------------------------------------------------------------
           Container(
-            width: 104,
+            width: 95,
             height: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(14),
             ),
             child: const Center(
-              child: Text(
-                'Photo',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
+              child: Icon(Icons.image_outlined, color: Colors.grey, size: 32),
             ),
           ),
-
-          const SizedBox(width: 12),
-
-          // ---------------------------------------------------------------
-          // DORM INFORMATION
-          // ---------------------------------------------------------------
+          const SizedBox(width: 14),
           Expanded(
             child: Stack(
               children: [
@@ -936,57 +823,49 @@ Widget buildExploreCard({
                   children: [
                     Text(
                       dorm.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
-                        color: Colors.black,
+                        color: Color(0xFF1E1E1E),
                       ),
                     ),
-
                     const SizedBox(height: 4),
-
                     Text(
                       dorm.priceAndRating,
                       style: const TextStyle(
                         fontSize: 13,
-                        color: Colors.black87,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF004D7A),
                       ),
                     ),
-
                     const SizedBox(height: 2),
-
                     Text(
                       dorm.distance,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Colors.black87,
-                      ),
-                    ),
-
-                    const SizedBox(height: 2),
-
-                    Text(
-                      dorm.preference,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Colors.black87,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
                       ),
                     ),
                   ],
                 ),
-
-                // ---------------------------------------------------------
-                // FAVORITE BUTTON
-                // ---------------------------------------------------------
                 Positioned(
-                  bottom: 4,
-                  right: 8,
+                  bottom: 0,
+                  right: 0,
                   child: GestureDetector(
                     onTap: onFavoriteTap,
-                    child: Icon(
-                      isFavorited ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorited ? Colors.red : Colors.black,
-                      size: 24,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: isFavorited ? const Color(0xFF004D7A).withOpacity(0.1) : Colors.grey.shade100,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        isFavorited ? Icons.bookmark : Icons.bookmark_border_rounded,
+                        color: isFavorited ? const Color(0xFF004D7A) : Colors.grey.shade600,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ),
@@ -998,19 +877,3 @@ Widget buildExploreCard({
     ),
   );
 }
-
-// ---------------------------------------------------------------------------
-// IMPORTANT
-// ---------------------------------------------------------------------------
-// There is intentionally NO RoomDetailScreen class here.
-//
-// RoomDetailScreen is imported from:
-//     screens/roomdesc.dart
-//
-// This fixes the problem where Chat and Book previously used:
-//     onPressed: () {}
-//
-// The RoomDetailScreen in roomdesc.dart contains:
-//     onPressed: _openChatScreen
-//     onPressed: _openBookingStatus
-// ---------------------------------------------------------------------------

@@ -8,13 +8,11 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  // Empty controllers to allow hint texts to show as placeholders
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _contactsController = TextEditingController();
 
-  final Color darkBlue = const Color(0xFF0A4F7D);
-  final Color cardGrey = const Color(0xFFD9D9D9);
+  final Color darkBlue = const Color(0xFF004D7A);
 
   @override
   void dispose() {
@@ -27,87 +25,80 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70),
-        child: AppBar(
-          backgroundColor: darkBlue,
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(16),
-            ),
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        backgroundColor: darkBlue,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Edit Profile',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
-          title: Row(
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Colors.white,
-                  size: 22,
-                ),
-                onPressed: () => Navigator.pop(context),
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                'Edit Profile',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
+        ),
+        elevation: 0,
+        toolbarHeight: 70,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            // Main Grey Card Container
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(
                 horizontal: 20.0,
-                vertical: 24.0,
+                vertical: 28.0,
               ),
               decoration: BoxDecoration(
-                color: cardGrey,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title Header
                   const Center(
                     child: Text(
-                      'Profile',
+                      'Update Your Details',
                       style: TextStyle(
-                        fontSize: 22,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Color(0xFF1E1E1E),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
 
                   // Avatar Image Stack with Edit Icon Badge
                   Center(
                     child: Stack(
                       children: [
                         Container(
-                          width: 110,
-                          height: 110,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            color: darkBlue.withOpacity(0.1),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
-                            Icons.person,
-                            size: 85,
-                            color: Colors.black,
+                          child: Center(
+                            child: Icon(
+                              Icons.person_rounded,
+                              size: 55,
+                              color: darkBlue,
+                            ),
                           ),
                         ),
                         Positioned(
@@ -118,19 +109,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               // Action to change or upload avatar photo
                             },
                             child: Container(
-                              padding: const EdgeInsets.all(6),
+                              padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: darkBlue,
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: Colors.grey.shade300,
-                                  width: 1.5,
+                                  color: Colors.white,
+                                  width: 2,
                                 ),
                               ),
                               child: const Icon(
-                                Icons.edit,
-                                size: 20,
-                                color: Colors.black,
+                                Icons.edit_rounded,
+                                size: 16,
+                                color: Colors.white,
                               ),
                             ),
                           ),
@@ -138,59 +129,57 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 32),
 
-                  // Input Fields with Hint Placeholders
+                  // Input Fields
                   _buildInputField(
-                    label: 'Name:',
+                    label: 'Name',
                     controller: _nameController,
-                    hintText: 'Enter your Name',
+                    hintText: 'Enter your full name',
                   ),
                   const SizedBox(height: 16),
 
                   _buildInputField(
-                    label: 'Email:',
+                    label: 'Email',
                     controller: _emailController,
-                    hintText: 'Enter your Email',
+                    hintText: 'Enter your email address',
                     keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 16),
 
                   _buildInputField(
-                    label: 'Contacts:',
+                    label: 'Contacts',
                     controller: _contactsController,
-                    hintText: 'Enter your Contact Number',
+                    hintText: 'Enter your contact number',
                     keyboardType: TextInputType.phone,
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 36),
 
                   // Confirm Button
-                  Center(
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 10,
-                        ),
+                        backgroundColor: darkBlue,
+                        foregroundColor: Colors.white,
+                        elevation: 2,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(14),
                         ),
                       ),
                       onPressed: () {
-                        // Pass typed values back to previous screens if not empty
+                        // Pass updated fields back to profile screen
                         Navigator.pop(context, {
-                          'name': _nameController.text,
-                          'email': _emailController.text,
-                          'contact': _contactsController.text,
+                          'name': _nameController.text.trim(),
+                          'email': _emailController.text.trim(),
+                          'contact': _contactsController.text.trim(),
                         });
                       },
-                      child: Text(
-                        'Confirm',
+                      child: const Text(
+                        'Save Changes',
                         style: TextStyle(
-                          color: darkBlue,
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -217,36 +206,42 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         Text(
           label,
           style: const TextStyle(
-            fontSize: 15,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: Color(0xFF333333),
           ),
         ),
-        const SizedBox(height: 6),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(4),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          style: const TextStyle(
+            fontSize: 15,
+            color: Colors.black,
           ),
-          child: TextField(
-            controller: controller,
-            keyboardType: keyboardType,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black,
+          decoration: InputDecoration(
+            hintText: hintText,
+            hintStyle: TextStyle(
+              color: Colors.grey.shade400,
+              fontSize: 14,
             ),
-            decoration: InputDecoration(
-              hintText: hintText,
-              hintStyle: TextStyle(
-                color: Colors.grey.shade400,
-                fontSize: 14,
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 10,
-              ),
-              border: InputBorder.none,
-              isDense: true,
+            filled: true,
+            fillColor: Colors.grey.shade50,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFF004D7A), width: 1.5),
             ),
           ),
         ),

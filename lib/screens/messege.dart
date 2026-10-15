@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:odbfinder/screens/chat.dart';
 
-// Global conversation list shared across the app
-List<Map<String, String>> globalConversations = [
-  {
-    'landlordName': 'John Doe',
-    'lastMessage': 'Hello, is the room still available?',
-    'time': '10:30 AM',
-  },
-];
+// Global conversation list starts empty and will populate from your database later[cite: 7]
+List<Map<String, String>> globalConversations = [];
 
 class MessagesScreen extends StatefulWidget {
   const MessagesScreen({super.key});
@@ -19,34 +13,34 @@ class MessagesScreen extends StatefulWidget {
 
 class _MessagesScreenState extends State<MessagesScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<Map<String, String>> _filteredConversations = [];
 
   @override
   void initState() {
     super.initState();
-    _filteredConversations = List.from(globalConversations);
     _searchController.addListener(_filterConversations);
   }
 
-  void _filterConversations() {
+  // Helper to filter conversations based on the search input
+  List<Map<String, String>> get _filteredConversations {
     final query = _searchController.text.toLowerCase();
-    setState(() {
-      if (query.isEmpty) {
-        _filteredConversations = List.from(globalConversations);
-      } else {
-        _filteredConversations = globalConversations.where((chat) {
-          final name = (chat['landlordName'] ?? '').toLowerCase();
-          final message = (chat['lastMessage'] ?? '').toLowerCase();
-          return name.contains(query) || message.contains(query);
-        }).toList();
-      }
-    });
+    if (query.isEmpty) {
+      return globalConversations;
+    } else {
+      return globalConversations.where((chat) {
+        final name = (chat['landlordName'] ?? '').toLowerCase();
+        final message = (chat['lastMessage'] ?? '').toLowerCase();
+        return name.contains(query) || message.contains(query);
+      }).toList();
+    }
+  }
+
+  void _filterConversations() {
+    setState(() {});
   }
 
   void _deleteConversation(Map<String, String> chat) {
     setState(() {
       globalConversations.remove(chat);
-      _filteredConversations.remove(chat);
     });
   }
 
@@ -96,7 +90,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
         ),
       ),
     );
-    _filterConversations();
+    // Refresh list upon returning from chat
+    setState(() {});
   }
 
   @override
@@ -107,27 +102,33 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_searchController.text.isEmpty) {
-      _filteredConversations = List.from(globalConversations);
-    }
+    final currentConversations = _filteredConversations;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey.shade50,
       body: Column(
         children: [
-          // Search Bar
+          // --- MODERN SEARCH BAR ---
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Container(
               height: 48,
               padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(24),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.grey.shade200),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
-                  Icon(Icons.search, color: Colors.grey.shade600, size: 24),
+                  Icon(Icons.search, color: Colors.grey.shade500, size: 20),
                   const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
@@ -135,8 +136,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       decoration: InputDecoration(
                         hintText: 'Search chats or landlords...',
                         hintStyle: TextStyle(
-                          color: Colors.grey.shade500,
-                          fontSize: 15,
+                          color: Colors.grey.shade400,
+                          fontSize: 14,
                         ),
                         border: InputBorder.none,
                         isDense: true,
@@ -148,8 +149,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       onTap: () => _searchController.clear(),
                       child: Icon(
                         Icons.clear,
-                        color: Colors.grey.shade600,
-                        size: 20,
+                        color: Colors.grey.shade500,
+                        size: 18,
                       ),
                     ),
                 ],
@@ -157,27 +158,46 @@ class _MessagesScreenState extends State<MessagesScreen> {
             ),
           ),
 
-          // Conversation List
+          // --- CONVERSATION LIST ---
           Expanded(
-            child: _filteredConversations.isEmpty
+            child: currentConversations.isEmpty
                 ? Center(
-                    child: Text(
-                      _searchController.text.isEmpty
-                          ? 'No messages yet'
-                          : 'No conversations found',
-                      style: TextStyle(
-                        color: Colors.grey.shade500,
-                        fontSize: 16,
-                      ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade100,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.chat_bubble_outline_rounded,
+                            size: 40,
+                            color: Colors.grey.shade400,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          _searchController.text.isEmpty
+                              ? 'No messages yet'
+                              : 'No conversations found',
+                          style: TextStyle(
+                            color: Colors.grey.shade500,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   )
                 : ListView.separated(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    itemCount: _filteredConversations.length,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    itemCount: currentConversations.length,
                     separatorBuilder: (context, index) =>
-                        const Divider(height: 1, color: Colors.black12),
+                        const SizedBox(height: 10),
                     itemBuilder: (context, index) {
-                      final chat = _filteredConversations[index];
+                      final chat = currentConversations[index];
                       final landlordName =
                           chat['landlordName'] ?? '[Landlord Name]';
 
@@ -202,7 +222,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
                           );
                         },
                         background: Container(
-                          color: Colors.red,
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade400,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.only(right: 20.0),
                           child: const Row(
@@ -217,48 +240,74 @@ class _MessagesScreenState extends State<MessagesScreen> {
                               ),
                               SizedBox(width: 8),
                               Icon(
-                                Icons.delete,
+                                Icons.delete_outline,
                                 color: Colors.white,
-                                size: 28,
+                                size: 24,
                               ),
                             ],
                           ),
                         ),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.04),
+                                blurRadius: 8,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                           ),
-                          leading: const CircleAvatar(
-                            radius: 26,
-                            backgroundColor: Colors.grey,
-                            child: Icon(
-                              Icons.person,
-                              size: 32,
-                              color: Colors.white,
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
                             ),
-                          ),
-                          title: Text(
-                            landlordName,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                            leading: Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF004D7A).withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.person_rounded,
+                                  size: 28,
+                                  color: Color(0xFF004D7A),
+                                ),
+                              ),
                             ),
-                          ),
-                          subtitle: Text(
-                            chat['lastMessage'] ?? '',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: Colors.grey.shade600),
-                          ),
-                          trailing: Text(
-                            chat['time'] ?? '',
-                            style: TextStyle(
-                              color: Colors.grey.shade500,
-                              fontSize: 12,
+                            title: Text(
+                              landlordName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Color(0xFF1E1E1E),
+                              ),
                             ),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.only(top: 4.0),
+                              child: Text(
+                                chat['lastMessage'] ?? '',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.grey.shade600,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                            trailing: Text(
+                              chat['time'] ?? '',
+                              style: TextStyle(
+                                color: Colors.grey.shade400,
+                                fontSize: 12,
+                              ),
+                            ),
+                            onTap: () => _openChatScreen(landlordName),
                           ),
-                          onTap: () => _openChatScreen(landlordName),
                         ),
                       );
                     },

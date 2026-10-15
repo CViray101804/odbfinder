@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:odbfinder/register/login.dart';
 
 class SecurityAndPasswordScreen extends StatefulWidget {
   const SecurityAndPasswordScreen({super.key});
@@ -9,13 +10,13 @@ class SecurityAndPasswordScreen extends StatefulWidget {
 }
 
 class _SecurityAndPasswordScreenState extends State<SecurityAndPasswordScreen> {
-  final Color darkBlue = const Color(0xFF0A4F7D);
-  final Color cardGrey = const Color(0xFFD9D9D9);
+  final Color darkBlue = const Color(0xFF004D7A);
 
   // Controllers for changing password
   final TextEditingController _currentPasswordController =
       TextEditingController();
-  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _newPasswordController =
+      TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
@@ -38,28 +39,37 @@ class _SecurityAndPasswordScreenState extends State<SecurityAndPasswordScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Deactivate Account'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Deactivate Account', style: TextStyle(fontWeight: FontWeight.bold)),
         content: const Text(
           'Are you sure you want to deactivate your account? Your profile and active listings will be hidden until you log back in.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context); // Close dialog
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Account has been deactivated.'),
+                  duration: Duration(seconds: 2),
                 ),
               );
+              // Navigate to Login Screen and clear navigation stack
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                (route) => false,
+              );
             },
-            child: const Text('Deactivate', style: TextStyle(color: Colors.white)),
+            child: const Text('Deactivate', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -70,30 +80,31 @@ class _SecurityAndPasswordScreenState extends State<SecurityAndPasswordScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Account'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Delete Account', style: TextStyle(fontWeight: FontWeight.bold)),
         content: const Text(
-          'Your account will be scheduled for permanent deletion. You have 30 days to log back in if you wish to cancel this request.',
+          '30 days until your account fully deleted. Are you sure you wanna delete your account?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'Deletion requested. Your account will be deleted in 30 days.',
-                  ),
-                ),
+              Navigator.pop(context); // Close dialog
+              // Navigate to Login and clear all previous routes
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                (route) => false,
               );
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.white)),
+            child: const Text('Yes', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -103,39 +114,25 @@ class _SecurityAndPasswordScreenState extends State<SecurityAndPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70),
-        child: AppBar(
-          backgroundColor: darkBlue,
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(16),
-            ),
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        backgroundColor: darkBlue,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Security & Password',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
-          title: Row(
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Colors.white,
-                  size: 22,
-                ),
-                onPressed: () => Navigator.pop(context),
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                'Security & Password',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
+        ),
+        elevation: 0,
+        toolbarHeight: 70,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
       ),
       body: SingleChildScrollView(
@@ -147,11 +144,18 @@ class _SecurityAndPasswordScreenState extends State<SecurityAndPasswordScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(
                 horizontal: 20.0,
-                vertical: 24.0,
+                vertical: 28.0,
               ),
               decoration: BoxDecoration(
-                color: cardGrey,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,16 +164,16 @@ class _SecurityAndPasswordScreenState extends State<SecurityAndPasswordScreen> {
                     child: Text(
                       'Change Password',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Color(0xFF1E1E1E),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
 
                   _buildPasswordField(
-                    label: 'Current Password:',
+                    label: 'Current Password',
                     controller: _currentPasswordController,
                     hintText: 'Enter current password',
                     isObscured: _obscureCurrent,
@@ -182,7 +186,7 @@ class _SecurityAndPasswordScreenState extends State<SecurityAndPasswordScreen> {
                   const SizedBox(height: 16),
 
                   _buildPasswordField(
-                    label: 'New Password:',
+                    label: 'New Password',
                     controller: _newPasswordController,
                     hintText: 'Enter new password',
                     isObscured: _obscureNew,
@@ -195,7 +199,7 @@ class _SecurityAndPasswordScreenState extends State<SecurityAndPasswordScreen> {
                   const SizedBox(height: 16),
 
                   _buildPasswordField(
-                    label: 'Confirm New Password:',
+                    label: 'Confirm New Password',
                     controller: _confirmPasswordController,
                     hintText: 'Re-enter new password',
                     isObscured: _obscureConfirm,
@@ -205,33 +209,31 @@ class _SecurityAndPasswordScreenState extends State<SecurityAndPasswordScreen> {
                       });
                     },
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 32),
 
-                  Center(
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 10,
-                        ),
+                        backgroundColor: darkBlue,
+                        foregroundColor: Colors.white,
+                        elevation: 2,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(14),
                         ),
                       ),
                       onPressed: () {
-                        // Password update logic
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Password updated successfully!'),
+                            duration: Duration(seconds: 2),
                           ),
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         'Update Password',
                         style: TextStyle(
-                          color: darkBlue,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -249,8 +251,15 @@ class _SecurityAndPasswordScreenState extends State<SecurityAndPasswordScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(20.0),
               decoration: BoxDecoration(
-                color: cardGrey,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,48 +269,49 @@ class _SecurityAndPasswordScreenState extends State<SecurityAndPasswordScreen> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Color(0xFF1E1E1E),
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const Text(
+                  Text(
                     'Manage your account visibility or request permanent deletion.',
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.black54,
+                      color: Colors.grey.shade600,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
 
                   // Deactivate Button Widget
                   InkWell(
                     onTap: _showDeactivateDialog,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
-                        vertical: 12,
+                        vertical: 14,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.orange.shade50,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: Colors.orange.shade100),
                       ),
                       child: Row(
-                        children: const [
-                          Icon(Icons.pause_circle_outline, color: Colors.orange),
-                          SizedBox(width: 12),
-                          Expanded(
+                        children: [
+                          const Icon(Icons.pause_circle_outline_rounded, color: Colors.orange, size: 22),
+                          const SizedBox(width: 14),
+                          const Expanded(
                             child: Text(
                               'Deactivate Account',
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                                color: Colors.orange,
                               ),
                             ),
                           ),
-                          Icon(Icons.arrow_forward_ios,
-                              size: 16, color: Colors.grey),
+                          Icon(Icons.arrow_forward_ios_rounded,
+                              size: 16, color: Colors.grey.shade400),
                         ],
                       ),
                     ),
@@ -312,24 +322,25 @@ class _SecurityAndPasswordScreenState extends State<SecurityAndPasswordScreen> {
                   // Delete Account Button Widget
                   InkWell(
                     onTap: _showDeleteDialog,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
-                        vertical: 12,
+                        vertical: 14,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.red.shade50,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: Colors.red.shade100),
                       ),
                       child: Row(
-                        children: const [
-                          Icon(Icons.delete_outline, color: Colors.red),
-                          SizedBox(width: 12),
+                        children: [
+                          const Icon(Icons.delete_outline_rounded, color: Colors.red, size: 22),
+                          const SizedBox(width: 14),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                              children: const [
                                 Text(
                                   'Delete Account',
                                   style: TextStyle(
@@ -340,17 +351,17 @@ class _SecurityAndPasswordScreenState extends State<SecurityAndPasswordScreen> {
                                 ),
                                 SizedBox(height: 2),
                                 Text(
-                                  '30-day grace period before permanent removal',
+                                  '30-day grace period before removal',
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: Colors.black45,
+                                    color: Colors.redAccent,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          Icon(Icons.arrow_forward_ios,
-                              size: 16, color: Colors.grey),
+                          Icon(Icons.arrow_forward_ios_rounded,
+                              size: 16, color: Colors.grey.shade400),
                         ],
                       ),
                     ),
@@ -377,44 +388,50 @@ class _SecurityAndPasswordScreenState extends State<SecurityAndPasswordScreen> {
         Text(
           label,
           style: const TextStyle(
-            fontSize: 15,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: Color(0xFF333333),
           ),
         ),
-        const SizedBox(height: 6),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(4),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          obscureText: isObscured,
+          style: const TextStyle(
+            fontSize: 15,
+            color: Colors.black,
           ),
-          child: TextField(
-            controller: controller,
-            obscureText: isObscured,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black,
+          decoration: InputDecoration(
+            hintText: hintText,
+            hintStyle: TextStyle(
+              color: Colors.grey.shade400,
+              fontSize: 14,
             ),
-            decoration: InputDecoration(
-              hintText: hintText,
-              hintStyle: TextStyle(
-                color: Colors.grey.shade400,
-                fontSize: 14,
+            filled: true,
+            fillColor: Colors.grey.shade50,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFF004D7A), width: 1.5),
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(
+                isObscured ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                color: Colors.grey.shade500,
+                size: 20,
               ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 12,
-              ),
-              border: InputBorder.none,
-              isDense: true,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  isObscured ? Icons.visibility_off : Icons.visibility,
-                  color: Colors.grey,
-                  size: 20,
-                ),
-                onPressed: onToggleVisibility,
-              ),
+              onPressed: onToggleVisibility,
             ),
           ),
         ),
