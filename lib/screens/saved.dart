@@ -33,9 +33,33 @@ class _SavedScreenState extends State<SavedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Dynamically check if this screen can pop (opened from ProfileScreen vs BottomNav)
+    final bool canPop = Navigator.of(context).canPop();
+
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
-      // Removed the duplicate local AppBar so HomeScreen's AppBar handles the top header
+      appBar: canPop
+          ? AppBar(
+              backgroundColor: darkBlue,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+                onPressed: () => Navigator.pop(context),
+              ),
+              title: const Text(
+                'Saved Rooms',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              elevation: 0,
+              toolbarHeight: 70,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+              ),
+            )
+          : null, // Hidden when used inside HomeScreen's bottom tab stack
       body: widget.savedDorms.isEmpty
           ? Center(
               child: Padding(
