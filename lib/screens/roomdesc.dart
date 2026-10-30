@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:odbfinder/screens/appstatus.dart';
-import 'package:odbfinder/screens/chat.dart';
 import 'package:odbfinder/screens/home.dart';
 import 'package:odbfinder/screens/messege.dart';
 import 'package:odbfinder/screens/adminprofile.dart';

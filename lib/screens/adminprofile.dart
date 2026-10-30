@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:odbfinder/screens/chat.dart';
 import 'package:odbfinder/screens/messege.dart';
 
 class AdminProfileScreen extends StatefulWidget {
